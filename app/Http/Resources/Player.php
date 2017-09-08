@@ -28,7 +28,7 @@ class Player extends Resource
                 'ea' => $this->EAGUID
             ],
             'meta' => [
-                'discord_id' => isset($this->DiscordID) ? $this->DiscordID : null
+                'discord_id' => isset($this->DiscordID) ? (int) $this->DiscordID : null
             ]
         ];
     }
