@@ -5,6 +5,10 @@ namespace BFACP\Http\Controllers\Auth;
 use BFACP\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
+/**
+ * Class ForgotPasswordController
+ * @package BFACP\Http\Controllers\Auth
+ */
 class ForgotPasswordController extends Controller
 {
     /*
@@ -23,7 +27,6 @@ class ForgotPasswordController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {

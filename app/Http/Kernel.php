@@ -4,6 +4,10 @@ namespace BFACP\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+/**
+ * Class Kernel
+ * @package BFACP\Http
+ */
 class Kernel extends HttpKernel
 {
     /**

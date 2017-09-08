@@ -5,6 +5,10 @@ namespace BFACP\Http\Middleware;
 use Illuminate\Http\Request;
 use Fideloper\Proxy\TrustProxies as Middleware;
 
+/**
+ * Class TrustProxies
+ * @package BFACP\Http\Middleware
+ */
 class TrustProxies extends Middleware
 {
     /**

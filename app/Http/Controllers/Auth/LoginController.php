@@ -5,6 +5,10 @@ namespace BFACP\Http\Controllers\Auth;
 use BFACP\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+/**
+ * Class LoginController
+ * @package BFACP\Http\Controllers\Auth
+ */
 class LoginController extends Controller
 {
     /*
@@ -30,7 +34,6 @@ class LoginController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {

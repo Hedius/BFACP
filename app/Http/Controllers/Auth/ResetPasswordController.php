@@ -5,6 +5,10 @@ namespace BFACP\Http\Controllers\Auth;
 use BFACP\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
+/**
+ * Class ResetPasswordController
+ * @package BFACP\Http\Controllers\Auth
+ */
 class ResetPasswordController extends Controller
 {
     /*
@@ -30,7 +34,6 @@ class ResetPasswordController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct()
     {

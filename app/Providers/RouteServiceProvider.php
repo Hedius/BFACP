@@ -5,6 +5,10 @@ namespace BFACP\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
+/**
+ * Class RouteServiceProvider
+ * @package BFACP\Providers
+ */
 class RouteServiceProvider extends ServiceProvider
 {
     /**

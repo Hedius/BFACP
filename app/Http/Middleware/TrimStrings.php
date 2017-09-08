@@ -4,6 +4,10 @@ namespace BFACP\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\TrimStrings as Middleware;
 
+/**
+ * Class TrimStrings
+ * @package BFACP\Http\Middleware
+ */
 class TrimStrings extends Middleware
 {
     /**

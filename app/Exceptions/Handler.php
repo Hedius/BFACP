@@ -5,6 +5,10 @@ namespace BFACP\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
+/**
+ * Class Handler
+ * @package BFACP\Exceptions
+ */
 class Handler extends ExceptionHandler
 {
     /**
