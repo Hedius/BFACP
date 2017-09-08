@@ -2,6 +2,7 @@
 
 namespace BFACP\Realm;
 
+use BFACP\Realm\Adkats\Record;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -36,5 +37,13 @@ class Player extends Model
     public function game()
     {
         return $this->belongsTo(Game::class, 'GameID');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function recordsBy()
+    {
+        return $this->hasMany(Record::class, 'source_id');
     }
 }
