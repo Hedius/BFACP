@@ -6,6 +6,7 @@ use BFACP\Http\Controllers\Controller;
 use BFACP\Http\Resources\Adkats\Record as RecordResource;
 use BFACP\Http\Resources\Player as PlayerResource;
 use BFACP\Realm\Player;
+use Illuminate\Http\Request;
 
 /**
  * Class PlayerController
@@ -34,17 +35,46 @@ class PlayerController extends Controller
      */
     public function show(Player $player)
     {
-        return new PlayerResource($player);
+        return response()->success(null, (new PlayerResource($player)));
     }
 
     /**
-     * @param \BFACP\Realm\Player $player
+     * @param \Illuminate\Http\Request $request
+     * @param \BFACP\Realm\Player      $player
      *
      * @return mixed
      */
-    public function showRecords(Player $player)
+    public function showRecordsByPlayer(Request $request, Player $player)
     {
-        $resultCollection = $player->recordsBy()->orderBy('record_id', 'desc')->paginate(30);
-        return RecordResource::collection($resultCollection);
+        $resultCollection = $player->recordsBy()->orderBy('record_id', 'desc');
+
+        // Filters the results to only show certain commands issued by the player.
+        if ($request->has('filter')) {
+            $commandIds = explode(',', $request->get('filter'));
+
+            $resultCollection = $resultCollection->whereIn('command_type', $commandIds);
+        }
+
+        return RecordResource::collection($resultCollection->paginate(30));
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \BFACP\Realm\Player      $player
+     *
+     * @return mixed
+     */
+    public function showRecordsAgainstPlayer(Request $request, Player $player)
+    {
+        $resultCollection = $player->recordsAgainst()->orderBy('record_id', 'desc');
+
+        // Filters the results to only show certain commands issued against the player.
+        if ($request->has('filter')) {
+            $commandIds = explode(',', $request->get('filter'));
+
+            $resultCollection = $resultCollection->whereIn('command_action', $commandIds);
+        }
+
+        return RecordResource::collection($resultCollection->paginate(30));
     }
 }

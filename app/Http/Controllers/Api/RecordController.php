@@ -56,7 +56,7 @@ class RecordController extends Controller
      */
     public function show(Record $record)
     {
-        return new RecordResource($record);
+        return response()->success(null, (new RecordResource($record)));
     }
 
     /**
@@ -77,11 +77,25 @@ class RecordController extends Controller
      * @param  \Illuminate\Http\Request   $request
      * @param  \BFACP\Realm\Adkats\Record $record
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|string
      */
     public function update(Request $request, Record $record)
     {
-        //
+        $request->validate([
+            'record_message' => 'required|filled|min:1|max:500'
+        ]);
+
+        $record_message = trim($request->get('record_message', $record->record_message));
+
+        $record->record_message = $record_message;
+
+        if (!$record->isDirty()) {
+            return response()->error('No changes detected. Record not updated.');
+        }
+
+        $record->save();
+
+        return response()->success('Record has been updated.', (new RecordResource($record)));
     }
 
     /**

@@ -21,7 +21,7 @@ class GameController extends Controller
      */
     public function index(Game $game)
     {
-        return GameResource::collection($game->all());
+        return response()->success(null, (GameResource::collection($game->all())));
     }
 
     /**
@@ -33,6 +33,6 @@ class GameController extends Controller
      */
     public function show(Game $game)
     {
-        return new GameResource($game);
+        return response()->success(null, (new GameResource($game)));
     }
 }

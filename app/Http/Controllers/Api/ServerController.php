@@ -2,10 +2,10 @@
 
 namespace BFACP\Http\Controllers\Api;
 
-use BFACP\Realm\Server;
-use Illuminate\Http\Request;
 use BFACP\Http\Controllers\Controller;
 use BFACP\Http\Resources\Server as ServerResource;
+use BFACP\Realm\Server;
+use Illuminate\Http\Request;
 
 /**
  * Class ServerController
@@ -28,7 +28,8 @@ class ServerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -39,19 +40,20 @@ class ServerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \BFACP\Realm\Server  $server
+     * @param  \BFACP\Realm\Server $server
      *
      * @return \BFACP\Http\Resources\Server
      */
     public function show(Server $server)
     {
-        return new ServerResource($server);
+        return response()->success(null, (new ServerResource($server)));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \BFACP\Realm\Server  $server
+     * @param  \BFACP\Realm\Server $server
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(Server $server)
@@ -62,8 +64,9 @@ class ServerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \BFACP\Realm\Server  $server
+     * @param  \Illuminate\Http\Request $request
+     * @param  \BFACP\Realm\Server      $server
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Server $server)
@@ -74,7 +77,8 @@ class ServerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \BFACP\Realm\Server  $server
+     * @param  \BFACP\Realm\Server $server
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(Server $server)

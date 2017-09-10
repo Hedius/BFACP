@@ -175,6 +175,7 @@ return [
         // BFACP\Providers\BroadcastServiceProvider::class,
         BFACP\Providers\EventServiceProvider::class,
         BFACP\Providers\RouteServiceProvider::class,
+        BFACP\Providers\ApiResponseMacroServiceProvider::class,
 
     ],
 

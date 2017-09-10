@@ -46,4 +46,12 @@ class Player extends Model
     {
         return $this->hasMany(Record::class, 'source_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function recordsAgainst()
+    {
+        return $this->hasMany(Record::class, 'target_id');
+    }
 }
