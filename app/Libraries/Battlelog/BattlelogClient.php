@@ -1,0 +1,197 @@
+<?php
+
+namespace BFACP\Libraries\Battlelog;
+
+
+use GuzzleHttp\Client as Guzzle;
+
+/**
+ * Class BattlelogClient
+ * @package BFACP\Libraries\Battlelog
+ */
+class BattlelogClient
+{
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    protected $client;
+
+    /**
+     * @var \BFACP\Realm\Server|null
+     */
+    protected $server = null;
+
+    /**
+     * @var \BFACP\Realm\Player|null
+     */
+    protected $player = null;
+
+    /**
+     * @var string
+     */
+    protected $game = '';
+
+    /**
+     * @var array
+     */
+    protected $uris = [
+        'bf4'     => [
+            'overview'      => '%s/warsawoverviewpopulate/%u/1/',
+            'weapons'       => '%s/warsawWeaponsPopulateStats/%u/1/stats/',
+            'vehicles'      => '%s/warsawvehiclesPopulateStats/%u/1/stats/',
+            'battlereports' => '%s/warsawbattlereportspopulate/%u/2048/1/',
+            'battlereport'  => '%s/battlereport/loadgeneralreport/%s/1/%u/',
+            'soldier'       => '%s/soldier/%u/stats/%u/pc/',
+        ],
+        'bf3'     => [
+            'overview'     => '%s/overviewPopulateStats/%u/bf3-ru-assault/1/',
+            'weapons'      => '%s/weaponsPopulateStats/%u/1/stats/',
+            'vehicles'     => '%s/vehiclesPopulateStats/%u/1/stats/',
+            //'battlereports' => '%s/warsawbattlereportspopulate/%u/2048/1/',
+            'battlereport' => '%s/battlereport/loadplayerreport/%s/1/%u/',
+            'soldier'      => '%s/soldier/%u/stats/%u/pc/',
+        ],
+        'bfh'     => [
+            'overview'      => '%s/bfhoverviewpopulate/%u/1/',
+            'weapons'       => '%s/BFHWeaponsPopulateStats/%u/1/stats/',
+            'vehicles'      => '%s/bfhvehiclesPopulateStats/%u/1/stats/',
+            'battlereports' => '%s/warsawbattlereportspopulate/%u/8192/1/',
+            'soldier'       => '%s/soldier/%u/stats/%u/pc/',
+        ],
+        'generic' => [
+            'profile' => '%s/user/%s',
+            'servers' => [
+                'players_online' => '%s/servers/getNumPlayersOnServer/pc/%s',
+                'server_browser' => '%s/servers/pc/?%s',
+            ],
+        ],
+    ];
+
+    /**
+     * @var array
+     */
+    protected $games = [
+        'bfh' => 8192,
+        'bf4' => 2048,
+        'bf3' => 2,
+    ];
+
+    /**
+     * @var string
+     */
+    private $battlelogUrl = 'http://battlelog.battlefield.com/';
+
+    /**
+     * BattlelogClient constructor.
+     *
+     * @param \GuzzleHttp\Client $guzzle
+     */
+    public function __construct(Guzzle $guzzle)
+    {
+        $this->client = $guzzle;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUris(): array
+    {
+        return $this->uris;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGames(): array
+    {
+        return $this->games;
+    }
+
+    /**
+     * @return \BFACP\Realm\Server
+     */
+    public function getServer(): \BFACP\Realm\Server
+    {
+        return $this->server;
+    }
+
+    /**
+     * @param \BFACP\Realm\Server $server
+     *
+     * @return BattlelogClient
+     */
+    public function setServer(\BFACP\Realm\Server $server): BattlelogClient
+    {
+        $this->server = $server;
+        $this->setGame($server->game->Name);
+
+        return $this;
+    }
+
+    /**
+     * @return \BFACP\Realm\Player
+     */
+    public function getPlayer(): \BFACP\Realm\Player
+    {
+        return $this->player;
+    }
+
+    /**
+     * @param \BFACP\Realm\Player $player
+     *
+     * @return BattlelogClient
+     */
+    public function setPlayer(\BFACP\Realm\Player $player): BattlelogClient
+    {
+        $this->player = $player;
+        $this->setGame($player->game->Name);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGame(): string
+    {
+        return $this->game;
+    }
+
+    /**
+     * @param string $game
+     *
+     * @return BattlelogClient
+     */
+    public function setGame(string $game): BattlelogClient
+    {
+        $this->game = strtolower(str_replace('BFHL', 'bfh', $game));
+
+        return $this;
+    }
+
+    /**
+     * @param string $uri
+     *
+     * @return array
+     */
+    protected function sendRequest($uri)
+    {
+        $response = $this->client->get($this->getBattlelogUrl($uri), [
+            'headers' => [
+                'X-AjaxNavigation' => true,
+            ],
+        ]);
+
+        return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * @param null|string $uri
+     *
+     * @return string
+     */
+    public function getBattlelogUrl($uri = null): string
+    {
+        return is_null($uri) ? $this->battlelogUrl : $this->battlelogUrl . $uri;
+    }
+}

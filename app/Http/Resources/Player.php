@@ -14,22 +14,28 @@ class Player extends Resource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request
+     *
      * @return array
      */
     public function toArray($request)
     {
         return [
-            'id' => $this->PlayerID,
-            'name' => $this->SoldierName,
-            'clantag' => $this->ClanTag,
-            'ip' => $this->IP_Address,
-            'guids' => [
+            'id'        => $this->PlayerID,
+            'name'      => $this->SoldierName,
+            'clantag'   => $this->ClanTag,
+            'ip'        => $this->IP_Address,
+            'guids'     => [
                 'pb' => $this->PBGUID,
-                'ea' => $this->EAGUID
+                'ea' => $this->EAGUID,
             ],
-            'meta' => [
-                'discord_id' => isset($this->DiscordID) ? (int) $this->DiscordID : null
-            ]
+            'battlelog' => [
+                'persona_id' => $this->battlelog->persona_id,
+                'user_id'    => (string) $this->battlelog->user_id,
+                'is_banned'  => $this->battlelog->is_banned,
+            ],
+            'meta'      => [
+                'discord_id' => isset($this->DiscordID) ? (int) $this->DiscordID : null,
+            ],
         ];
     }
 }

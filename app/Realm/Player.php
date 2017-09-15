@@ -2,6 +2,7 @@
 
 namespace BFACP\Realm;
 
+use BFACP\Realm\Adkats\Battlelog;
 use BFACP\Realm\Adkats\Record;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,6 +33,11 @@ class Player extends Model
     protected $guarded = ['PlayerID'];
 
     /**
+     * @var array
+     */
+    protected $with = ['game', 'battlelog'];
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function game()
@@ -53,5 +59,23 @@ class Player extends Model
     public function recordsAgainst()
     {
         return $this->hasMany(Record::class, 'target_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function battlelog()
+    {
+        return $this->hasOne(Battlelog::class, 'player_id');
+    }
+
+    /**
+     * Does the player have a battlelog persona id linked.
+     *
+     * @return bool
+     */
+    public function hasPersona(): bool
+    {
+        return ! empty($this->battlelog);
     }
 }
