@@ -92,10 +92,18 @@ class BattlelogClient
     }
 
     /**
-     * @return array
+     * @param null $pluck
+     *
+     * @return array|string
      */
-    public function getUris(): array
+    public function getUris($pluck = null)
     {
+        if (! is_null($pluck) && is_string($pluck)) {
+            $uriValue = array_get(array_dot($this->uris), $pluck);
+
+            return $uriValue;
+        }
+
         return $this->uris;
     }
 
@@ -150,10 +158,16 @@ class BattlelogClient
     }
 
     /**
+     * @param bool $skipRename
+     *
      * @return string
      */
-    public function getGame(): string
+    public function getGame($skipRename = false): string
     {
+        if($skipRename) {
+            return strtoupper(str_replace('bfh', 'BFHL', $this->game));
+        }
+
         return $this->game;
     }
 
