@@ -16,7 +16,10 @@
         ],
         "psr-4": {
             "BFACP\\": "app/"
-        }
+        },
+        "files": [
+            "app/Http/helpers.php"
+        ]
     },
     "extra": {
         "laravel": {
