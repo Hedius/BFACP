@@ -82,7 +82,7 @@ class Server extends BattlelogClient
     /**
      * @return string
      */
-    public function getBattlelogServerGuid() : string
+    public function getBattlelogServerGuid(): string
     {
         return $this->battlelogServerInfo['guid'];
     }
@@ -93,9 +93,10 @@ class Server extends BattlelogClient
     public function getOnlinePlayers()
     {
         $slots = $this->battlelogServerInfo['slots'];
+
         return [
-            'in_queue' => $slots[1],
-            'players' => $slots[2],
+            'in_queue'   => $slots[1],
+            'players'    => $slots[2],
             'spectators' => $slots[8] ?: null,
             'commanders' => $slots[4] ?: null,
         ];
@@ -103,6 +104,7 @@ class Server extends BattlelogClient
 
     /**
      * @return $this
+     * @throws \Throwable
      */
     public function getServerInfo()
     {
@@ -135,7 +137,10 @@ class Server extends BattlelogClient
     }
 
     /**
+     * @param $uri
+     *
      * @return mixed
+     * @throws \Throwable
      */
     private function buildRequestAndSend($uri)
     {

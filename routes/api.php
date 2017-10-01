@@ -6,6 +6,8 @@ Route::namespace('Api')->group(function () {
 
     Route::get('player/{player}/records/against', 'PlayerController@showRecordsAgainstPlayer');
 
+    Route::get('player/{player}/acs', 'PlayerController@showAntiCheatData');
+
     Route::resource('player', 'PlayerController', [
         'only' => [
             'index',
@@ -40,4 +42,6 @@ Route::namespace('Api')->group(function () {
             'index',
         ],
     ]);
+
+    Route::resource('ban', 'Adkats\BanController');
 });

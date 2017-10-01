@@ -5,6 +5,7 @@ namespace BFACP\Http\Controllers\Api;
 use BFACP\Http\Controllers\Controller;
 use BFACP\Http\Resources\Adkats\Record as RecordResource;
 use BFACP\Http\Resources\Player as PlayerResource;
+use BFACP\Libraries\Battlelog\AntiCheat;
 use BFACP\Realm\Player;
 use Illuminate\Http\Request;
 
@@ -76,5 +77,19 @@ class PlayerController extends Controller
         }
 
         return RecordResource::collection($resultCollection->paginate(30));
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \BFACP\Realm\Player      $player
+     *
+     * @return mixed
+     */
+    public function showAntiCheatData(Request $request, Player $player)
+    {
+        $battlelog = app(AntiCheat::class);
+        $battlelog->setPlayer($player);
+
+        return $battlelog->parse($battlelog->getPlayerWeapons())->getWeaponsDetected();
     }
 }

@@ -2,6 +2,9 @@
 
 namespace BFACP\Libraries\Battlelog;
 
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Class AntiCheat
@@ -83,11 +86,12 @@ class AntiCheat extends Player
     /**
      * AntiCheat constructor.
      *
-     * @param \GuzzleHttp\Client $guzzle
+     * @param \GuzzleHttp\Client           $guzzle
+     * @param \Illuminate\Cache\Repository $cache
      */
-    public function __construct(\GuzzleHttp\Client $guzzle)
+    public function __construct(\GuzzleHttp\Client $guzzle, \Illuminate\Cache\Repository $cache)
     {
-        parent::__construct($guzzle);
+        parent::__construct($guzzle, $cache);
 
         $this->getWeaponDamages();
     }
@@ -97,13 +101,23 @@ class AntiCheat extends Player
      */
     private function getWeaponDamages()
     {
-        try {
-            $response = $this->client->get($this->_links['weapon_damages']['primary']);
-        } catch (\Exception $e) {
-            $response = $this->client->get($this->_links['weapon_damages']['backup']);
-        }
+        $this->setWeapons($this->cache->remember('acs.weapons', 60 * 24, function () {
+            try {
+                $response = $this->client->get($this->_links['weapon_damages']['primary']);
+            } catch (RequestException $e) {
+                Log::error('Failed to get weapon damages from github. Trying backup location..');
+                try {
+                    $response = $this->client->get($this->_links['weapon_damages']['backup']);
+                } catch (RequestException $e) {
+                    Log::critical('Failed to get weapon damages from backup location. Reason: ' . $e->getMessage());
+                    throw $e;
+                }
+            }
 
-        return $this->setWeapons(json_decode($response->getBody(), true));
+            return json_decode($response->getBody(), true);
+        }));
+
+        return $this;
     }
 
     /**

@@ -3,9 +3,9 @@
 namespace BFACP\Http\Controllers\Api\Adkats;
 
 use BFACP\Http\Controllers\Controller;
+use BFACP\Http\Resources\Adkats\Ban as BanResource;
 use BFACP\Realm\Adkats\Ban;
 use Illuminate\Http\Request;
-use BFACP\Http\Resources\Adkats\Ban as BanResource;
 
 /**
  * Class BanController
@@ -15,6 +15,8 @@ class BanController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @param \BFACP\Realm\Adkats\Ban $ban
      *
      * @return \Illuminate\Http\Response
      */

@@ -4,6 +4,9 @@ namespace BFACP\Libraries\Battlelog;
 
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Cache\Repository as Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class BattlelogClient
@@ -77,6 +80,11 @@ class BattlelogClient
     ];
 
     /**
+     * @var \Illuminate\Cache\Repository
+     */
+    protected $cache;
+
+    /**
      * @var string
      */
     private $battlelogUrl = 'http://battlelog.battlefield.com/';
@@ -84,11 +92,13 @@ class BattlelogClient
     /**
      * BattlelogClient constructor.
      *
-     * @param \GuzzleHttp\Client $guzzle
+     * @param \GuzzleHttp\Client           $guzzle
+     * @param \Illuminate\Cache\Repository $cache
      */
-    public function __construct(Guzzle $guzzle)
+    public function __construct(Guzzle $guzzle, Cache $cache)
     {
         $this->client = $guzzle;
+        $this->cache = $cache;
     }
 
     /**
@@ -164,7 +174,7 @@ class BattlelogClient
      */
     public function getGame($skipRename = false): string
     {
-        if($skipRename) {
+        if ($skipRename) {
             return strtoupper(str_replace('bfh', 'BFHL', $this->game));
         }
 
@@ -190,13 +200,20 @@ class BattlelogClient
      */
     protected function sendRequest($uri)
     {
-        $response = $this->client->get($this->getBattlelogUrl($uri), [
-            'headers' => [
-                'X-AjaxNavigation' => true,
-            ],
-        ]);
+        try {
+            $response = $this->client->get($this->getBattlelogUrl($uri), [
+                'headers' => [
+                    'X-AjaxNavigation' => true,
+                ],
+            ]);
 
-        return json_decode($response->getBody(), true);
+            return json_decode($response->getBody(), true);
+        } catch (RequestException $e) {
+            Log::error(sprintf('Request to "%s" failed.', $this->getBattlelogUrl($uri)));
+            Log::critical(sprintf('Request to "%s" failed. Reason: %s', $this->getBattlelogUrl($uri),
+                $e->getMessage()));
+            throw $e;
+        }
     }
 
     /**
