@@ -64,7 +64,7 @@ class Server extends BattlelogClient
      */
     public function getBattlelogServerInfo()
     {
-        return $this->battlelogServerInfo;
+        return $this->cache->get('battlelog.server.' . $this->server->id);
     }
 
     /**
@@ -74,7 +74,10 @@ class Server extends BattlelogClient
      */
     public function setBattlelogServerInfo($battlelogServerInfo)
     {
-        $this->battlelogServerInfo = $battlelogServerInfo;
+        $this->battlelogServerInfo = $this->cache->remember('battlelog.server.' . $this->server->id, 5,
+            function () use ($battlelogServerInfo) {
+                return $battlelogServerInfo;
+            });
 
         return $this;
     }
@@ -95,10 +98,10 @@ class Server extends BattlelogClient
         $slots = $this->battlelogServerInfo['slots'];
 
         return [
-            'in_queue'   => $slots[1],
-            'players'    => $slots[2],
-            'spectators' => $slots[8] ?: null,
-            'commanders' => $slots[4] ?: null,
+            'in_queue'   => isset($slots[1]) ? $slots[1] : ['current' => 0, 'max' => 0],
+            'players'    => isset($slots[2]) ? $slots[2] : ['current' => 0, 'max' => 0],
+            'spectators' => isset($slots[8]) ? $slots[8] : ['current' => 0, 'max' => 0],
+            'commanders' => isset($slots[4]) ? $slots[4] : ['current' => 0, 'max' => 0],
         ];
     }
 
@@ -108,6 +111,10 @@ class Server extends BattlelogClient
      */
     public function getServerInfo()
     {
+        if (! empty($this->battlelogServerInfo)) {
+            return $this->getBattlelogServerInfo();
+        }
+
         $this->options['q'] = $this->server->ServerName;
         $uri = sprintf($this->getUris()['generic']['servers']['server_browser'], $this->getGame(),
             http_build_query($this->options));
@@ -125,7 +132,6 @@ class Server extends BattlelogClient
             foreach ($servers as $server) {
                 if ($server['name'] == $this->server->ServerName) {
                     $this->setBattlelogServerInfo($server);
-
                     break;
                 }
             }
@@ -133,7 +139,7 @@ class Server extends BattlelogClient
             $this->setBattlelogServerInfo($servers[0]);
         }
 
-        return $this;
+        return $this->getBattlelogServerInfo();
     }
 
     /**
