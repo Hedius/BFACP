@@ -38,7 +38,7 @@ class Ban extends Resource
                 'issued'  => $this->ban_issued,
                 'expires' => $this->ban_expires,
             ],
-            'record' => (new RecordResource($this->record)),
+            'record'           => (new RecordResource($this->record)),
         ];
     }
 }

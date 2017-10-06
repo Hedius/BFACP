@@ -51,8 +51,10 @@ class Server extends Model
     public function getIPAttribute()
     {
         $host = explode(':', $this->IP_Address)[0];
+
         return gethostbyname($host);
     }
+
     /**
      * Gets the RCON port from the IP Address.
      *
@@ -61,6 +63,7 @@ class Server extends Model
     public function getPortAttribute()
     {
         $port = explode(':', $this->IP_Address)[1];
+
         return (int) $port;
     }
 

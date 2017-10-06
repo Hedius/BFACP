@@ -16,22 +16,27 @@ class Record extends Model
      * @var bool
      */
     public $timestamps = false;
+
     /**
      * @var string
      */
     protected $table = 'adkats_records_main';
+
     /**
      * @var string
      */
     protected $primaryKey = 'record_id';
+
     /**
      * @var array
      */
     protected $guarded = ['record_id'];
+
     /**
      * @var array
      */
     protected $dates = ['record_time'];
+
     /**
      * @var array
      */

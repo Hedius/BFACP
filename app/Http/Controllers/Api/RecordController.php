@@ -82,14 +82,14 @@ class RecordController extends Controller
     public function update(Request $request, Record $record)
     {
         $request->validate([
-            'record_message' => 'required|filled|min:1|max:500'
+            'record_message' => 'required|filled|min:1|max:500',
         ]);
 
         $record_message = trim($request->get('record_message', $record->record_message));
 
         $record->record_message = $record_message;
 
-        if (!$record->isDirty()) {
+        if (! $record->isDirty()) {
             return response()->error('No changes detected. Record not updated.');
         }
 

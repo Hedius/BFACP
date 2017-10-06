@@ -18,30 +18,35 @@ class Ban extends Model
      * @var bool
      */
     public $timestamps = false;
+
     /**
      * Table name.
      *
      * @var string
      */
     protected $table = 'adkats_bans';
+
     /**
      * Table primary key.
      *
      * @var string
      */
     protected $primaryKey = 'ban_id';
+
     /**
      * Fields not allowed to be mass assigned.
      *
      * @var array
      */
     protected $guarded = ['ban_id', 'ban_sync'];
+
     /**
      * Date fields to convert to carbon instances.
      *
      * @var array
      */
     protected $dates = ['ban_startTime', 'ban_endTime'];
+
     /**
      * Append custom attributes to output.
      *
@@ -58,6 +63,7 @@ class Ban extends Model
         'ban_issued',
         'ban_expires',
     ];
+
     /**
      * Models to be loaded automatically.
      *

@@ -14,26 +14,27 @@ class Server extends Resource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request
+     *
      * @return array
      */
     public function toArray($request)
     {
         return [
-            'id' => $this->ServerID,
-            'ip' => $this->ip,
+            'id'        => $this->ServerID,
+            'ip'        => $this->ip,
             'rcon_port' => $this->port,
-            'name' => $this->ServerName,
-            'game' => [
-                'id' => $this->game->GameID,
-                'label' => $this->game->Name
+            'name'      => $this->ServerName,
+            'game'      => [
+                'id'    => $this->game->GameID,
+                'label' => $this->game->Name,
             ],
-            'map' => $this->mapName,
-            'mode' => $this->GameMode,
-            'slug' => $this->slug,
-            'slots' => [
-                'max' => $this->maxSlots,
-                'active' => $this->usedSlots
-            ]
+            'map'       => $this->mapName,
+            'mode'      => $this->GameMode,
+            'slug'      => $this->slug,
+            'slots'     => [
+                'max'    => $this->maxSlots,
+                'active' => $this->usedSlots,
+            ],
         ];
     }
 }
