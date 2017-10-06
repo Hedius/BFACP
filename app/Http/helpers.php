@@ -45,4 +45,47 @@ if (! function_exists('percent')) {
     }
 }
 
+if (! function_exists('booleanToString'))
+{
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
+    function booleanToString($boolean): string
+    {
+        return $boolean ? 'true' :  'false';
+    }
+}
 
+if (! function_exists('arrayToBoolean'))
+{
+    /**
+     * @param     $array
+     * @param int $key
+     *
+     * @return bool
+     */
+    function arrayToBoolean($array, $key = 1): bool
+    {
+        if (isset($array[$key]) && $array[$key] == 'true') {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+if (! function_exists('arrayToString'))
+{
+    /**
+     * @param     $array
+     * @param int $key
+     *
+     * @return string
+     */
+    function arrayToString($array, $key = 1): string
+    {
+        return $array[$key];
+    }
+}
