@@ -190,6 +190,7 @@ class BattlefieldConn
      * @param $rconPassword
      *
      * @return mixed|string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function loginInsecure($rconPassword)
     {
@@ -209,6 +210,7 @@ class BattlefieldConn
      * @param $rconPassword
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function loginSecure($rconPassword)
     {
@@ -230,6 +232,7 @@ class BattlefieldConn
 
     /**
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function logout(): string
     {
@@ -240,6 +243,7 @@ class BattlefieldConn
 
     /**
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function quit(): string
     {
@@ -256,6 +260,7 @@ class BattlefieldConn
 
     /**
      * @return array
+     * @throws \Throwable
      */
     public function getServerInfo(): array
     {
@@ -277,6 +282,7 @@ class BattlefieldConn
 
     /**
      * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function getServerVersion(): int
     {
@@ -289,6 +295,7 @@ class BattlefieldConn
 
     /**
      * @return string
+     * @throws \Throwable
      */
     public function getServerName(): string
     {
@@ -297,6 +304,7 @@ class BattlefieldConn
 
     /**
      * @return int
+     * @throws \Throwable
      */
     public function getCurrentPlayers(): int
     {
@@ -305,6 +313,7 @@ class BattlefieldConn
 
     /**
      * @return int
+     * @throws \Throwable
      */
     public function getMaxPlayers(): int
     {
@@ -312,9 +321,12 @@ class BattlefieldConn
     }
 
     /**
-     * @param null :string $isGameType
+     * @param      null :string $isGameType
+     *
+     * @param bool $readable
      *
      * @return bool|string
+     * @throws \Throwable
      */
     public function getCurrentGameMode($isGameType = null, $readable = true)
     {
@@ -328,6 +340,7 @@ class BattlefieldConn
 
     /**
      * @return string
+     * @throws \Throwable
      */
     public function getCurrentMap(): string
     {
@@ -338,6 +351,7 @@ class BattlefieldConn
 
     /**
      * @return int
+     * @throws \Throwable
      */
     public function getRoundsPlayed(): int
     {
@@ -346,6 +360,7 @@ class BattlefieldConn
 
     /**
      * @return int
+     * @throws \Throwable
      */
     public function getTotalRounds(): int
     {
@@ -354,6 +369,7 @@ class BattlefieldConn
 
     /**
      * @return array
+     * @throws \Throwable
      */
     public function getTeamScores(): array
     {
@@ -416,6 +432,7 @@ class BattlefieldConn
 
     /**
      * @return array
+     * @throws \Throwable
      */
     public function processData()
     {
@@ -434,8 +451,8 @@ class BattlefieldConn
 
     /**
      * Returns the game password. Not to be confused with the RCON password.
-     *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGetGamepassword(): string
     {
@@ -459,6 +476,7 @@ class BattlefieldConn
      * @param string $gamePassword
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSetGamepassword($gamePassword = ''): string
     {
@@ -495,8 +513,8 @@ class BattlefieldConn
 
     /**
      * Check if spotted targets are visible in the 3d-world.
-     *
      * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGet3dSpotting(): bool
     {
@@ -509,6 +527,7 @@ class BattlefieldConn
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSet3dSpotting($boolean): string
     {
@@ -517,8 +536,8 @@ class BattlefieldConn
 
     /**
      * Gets if players are allowed to switch to third-person vehicle cameras.
-     *
      * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGet3pCam(): bool
     {
@@ -531,6 +550,7 @@ class BattlefieldConn
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSet3pCam($boolean): string
     {
@@ -539,8 +559,8 @@ class BattlefieldConn
 
     /**
      * Gets whether spectators are allowed to join without being on the spectator list.
-     *
      * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGetAllowSpectators(): bool
     {
@@ -555,6 +575,7 @@ class BattlefieldConn
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSetAllowSpectators($boolean): string
     {
@@ -564,8 +585,8 @@ class BattlefieldConn
 
     /**
      * Gets if the server should autobalance.
-     *
      * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGetAutoBalance(): bool
     {
@@ -578,6 +599,7 @@ class BattlefieldConn
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSetAutoBalance($boolean): string
     {
@@ -586,6 +608,7 @@ class BattlefieldConn
 
     /**
      * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGetBulletDamage(): int
     {
@@ -596,6 +619,7 @@ class BattlefieldConn
      * @param $modifier
      *
      * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSetBulletDamage($modifier): int
     {
@@ -603,423 +627,455 @@ class BattlefieldConn
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetCommander()
+    public function adminVarGetCommander(): bool
     {
-        return arrayToString($this->clientRequest('vars.commander'));
-    }
-
-    /**
-     * @param $boolean
-     *
-     * @return mixed
-     */
-    public function adminVarSetCommander($boolean)
-    {
-        return $this->clientRequest(sprintf('vars.commander %s', booleanToString($boolean)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetcrossHair()
-    {
-        return arrayToString($this->clientRequest('vars.crossHair'));
+        return arrayToBoolean($this->clientRequest('vars.commander'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetcrossHair($boolean)
+    public function adminVarSetCommander($boolean): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.crossHair %s', booleanToString($boolean))));
+        return arrayToString($this->clientRequest(sprintf('vars.commander %s', booleanToString($boolean))), 0);
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetForceReloadWholeMags()
+    public function adminVarGetForceReloadWholeMags(): bool
     {
-        return arrayToString($this->clientRequest('vars.forceReloadWholeMags'));
-    }
-
-    /**
-     * @param $boolean
-     *
-     * @return string
-     */
-    public function adminVarSetForceReloadWholeMags($boolean)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.forceReloadWholeMags %s', $boolean)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetFriendlyFire()
-    {
-        return arrayToString($this->clientRequest('vars.friendlyFire'));
+        return arrayToBoolean($this->clientRequest('vars.forceReloadWholeMags'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetForceReloadWholeMags($boolean): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.forceReloadWholeMags %s', booleanToString($boolean))),
+            0);
+    }
+
+    /**
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetFriendlyFire(): bool
+    {
+        return arrayToBoolean($this->clientRequest('vars.friendlyFire'));
+    }
+
+    /**
+     * @param $boolean
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSetFriendlyFire($boolean)
     {
-        return arrayToString($this->clientRequest(sprintf('vars.friendlyFire %s', $boolean)));
+        return arrayToString($this->clientRequest(sprintf('vars.friendlyFire %s', booleanToString($boolean))), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetGameModeCounter()
+    public function adminVarGetGameModeCounter(): int
     {
-        return arrayToString($this->clientRequest('vars.gameModeCounter'));
+        return arrayToInteger($this->clientRequest('vars.gameModeCounter'));
     }
 
     /**
+     * Set scale factor for number of tickets to end round, in percent
+     *
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetGameModeCounter($integer)
+    public function adminVarSetGameModeCounter($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.gameModeCounter %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.gameModeCounter %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetHitIndicators()
+    public function adminVarGetHitIndicators(): bool
     {
-        return arrayToString($this->clientRequest('vars.hitIndicatorsEnabled'));
+        return arrayToBoolean($this->clientRequest('vars.hitIndicatorsEnabled'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetHitIndicators($boolean)
+    public function adminVarSetHitIndicators($boolean): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.hitIndicatorsEnabled %s', $boolean)));
+        return arrayToString($this->clientRequest(sprintf('vars.hitIndicatorsEnabled %s', booleanToString($boolean))),
+            0);
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetHud()
+    public function adminVarGetHud(): bool
     {
-        return arrayToString($this->clientRequest('vars.hud'));
+        return arrayToBoolean($this->clientRequest('vars.hud'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetHud($boolean)
+    public function adminVarSetHud($boolean): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.hud %s', $boolean)));
+        return arrayToString($this->clientRequest(sprintf('vars.hud %s', booleanToString($boolean))), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetIdleBanRounds()
+    public function adminVarGetIdleBanRounds(): int
     {
-        return arrayToString($this->clientRequest('vars.idleBanRounds'));
+        return arrayToInteger($this->clientRequest('vars.idleBanRounds'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetIdleBanRounds($integer)
+    public function adminVarSetIdleBanRounds($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.idleBanRounds %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.idleBanRounds %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetIdleTimeout()
+    public function adminVarGetIdleTimeout(): int
     {
-        return arrayToString($this->clientRequest('vars.idleTimeout'));
+        return arrayToInteger($this->clientRequest('vars.idleTimeout'));
     }
 
     /**
      * @param $seconds
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetIdleTimeout($seconds)
+    public function adminVarSetIdleTimeout($seconds): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.idleTimeout %s', $seconds)));
+        return arrayToString($this->clientRequest(sprintf('vars.idleTimeout %s', $seconds)), 0);
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetKillCam()
+    public function adminVarGetKillCam(): bool
     {
-        return arrayToString($this->clientRequest('vars.killCam'));
+        return arrayToBoolean($this->clientRequest('vars.killCam'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarSetKillCam($boolean)
     {
-        return arrayToString($this->clientRequest(sprintf('vars.killCam %s', $boolean)));
+        return arrayToString($this->clientRequest(sprintf('vars.killCam %s', booleanToString($boolean))), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetMaxPlayers()
+    public function adminVarGetMaxPlayers(): int
     {
-        return arrayToString($this->clientRequest('vars.maxPlayers'));
-    }
-
-    /**
-     * @param $integer
-     *
-     * @return string
-     */
-    public function adminVarSetMaxPlayers($integer)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.maxPlayers %s', $integer)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetMaxSpectators()
-    {
-        return arrayToString($this->clientRequest('vars.maxSpectators'));
+        return arrayToInteger($this->clientRequest('vars.maxPlayers'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetMaxSpectators($integer)
+    public function adminVarSetMaxPlayers($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.maxSpectators %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.maxPlayers %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetMiniMap()
+    public function adminVarGetMaxSpectators(): int
     {
-        return arrayToString($this->clientRequest('vars.miniMap'));
-    }
-
-    /**
-     * @param $boolean
-     *
-     * @return string
-     */
-    public function adminVarSetMiniMap($boolean)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.miniMap %s', $boolean)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetMiniMapSpotting()
-    {
-        return arrayToString($this->clientRequest('vars.miniMapSpotting'));
-    }
-
-    /**
-     * @param $boolean
-     *
-     * @return string
-     */
-    public function adminVarSetMiniMapSpotting($boolean)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.miniMapSpotting %s', $boolean)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetNameTag()
-    {
-        return arrayToString($this->clientRequest('vars.nameTag'));
-    }
-
-    /**
-     * @param $boolean
-     *
-     * @return string
-     */
-    public function adminVarSetNameTag($boolean)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.nameTag %s', $boolean)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetOnlySquadLeaderSpawn()
-    {
-        return arrayToString($this->clientRequest('vars.onlySquadLeaderSpawn'));
-    }
-
-    /**
-     * @param $boolean
-     *
-     * @return string
-     */
-    public function adminVarSetOnlySquadLeaderSpawn($boolean)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.onlySquadLeaderSpawn %s', $boolean)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetPlayerRespawnTime()
-    {
-        return arrayToString($this->clientRequest('vars.playerRespawnTime'));
+        return arrayToInteger($this->clientRequest('vars.maxSpectators'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetPlayerRespawnTime($integer)
+    public function adminVarSetMaxSpectators($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.playerRespawnTime %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.maxSpectators %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetRegenerateHealth()
+    public function adminVarGetMiniMap(): bool
     {
-        return arrayToString($this->clientRequest('vars.regenerateHealth'));
+        return arrayToBoolean($this->clientRequest('vars.miniMap'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetRegenerateHealth($boolean)
+    public function adminVarSetMiniMap($boolean): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.regenerateHealth %s', $boolean)));
+        return arrayToString($this->clientRequest(sprintf('vars.miniMap %s', booleanToString($boolean))), 0);
     }
 
     /**
-     * @return string
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetRoundLockdownCountdown()
+    public function adminVarGetMiniMapSpotting(): bool
     {
-        return arrayToString($this->clientRequest('vars.roundLockdownCountdown'));
+        return arrayToBoolean($this->clientRequest('vars.miniMapSpotting'));
+    }
+
+    /**
+     * @param $boolean
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetMiniMapSpotting($boolean): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.miniMapSpotting %s', booleanToString($boolean))), 0);
+    }
+
+    /**
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetNameTag(): bool
+    {
+        return arrayToBoolean($this->clientRequest('vars.nameTag'));
+    }
+
+    /**
+     * @param $boolean
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetNameTag($boolean): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.nameTag %s', booleanToString($boolean))), 0);
+    }
+
+    /**
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetOnlySquadLeaderSpawn(): bool
+    {
+        return arrayToBoolean($this->clientRequest('vars.onlySquadLeaderSpawn'));
+    }
+
+    /**
+     * @param $boolean
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetOnlySquadLeaderSpawn($boolean): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.onlySquadLeaderSpawn %s', booleanToString($boolean))),
+            0);
+    }
+
+    /**
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetPlayerRespawnTime(): int
+    {
+        return arrayToInteger($this->clientRequest('vars.playerRespawnTime'));
+    }
+
+    /**
+     * @param $integer
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetPlayerRespawnTime($integer): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.playerRespawnTime %s', $integer)), 0);
+    }
+
+    /**
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetRegenerateHealth(): bool
+    {
+        return arrayToBoolean($this->clientRequest('vars.regenerateHealth'));
+    }
+
+    /**
+     * @param $boolean
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetRegenerateHealth($boolean): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.regenerateHealth %s', booleanToString($boolean))), 0);
+    }
+
+    /**
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetRoundLockdownCountdown(): int
+    {
+        return arrayToInteger($this->clientRequest('vars.roundLockdownCountdown'));
     }
 
     /**
      * @param $seconds
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetRoundLockdownCountdown($seconds)
+    public function adminVarSetRoundLockdownCountdown($seconds): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.roundLockdownCountdown %s', $seconds)));
+        return arrayToString($this->clientRequest(sprintf('vars.roundLockdownCountdown %s', $seconds)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetRoundRestartPlayerCount()
+    public function adminVarGetRoundRestartPlayerCount(): int
     {
-        return arrayToString($this->clientRequest('vars.roundRestartPlayerCount'));
-    }
-
-    /**
-     * @param $integer
-     *
-     * @return string
-     */
-    public function adminVarSetRoundRestartPlayerCount($integer)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.roundRestartPlayerCount %s', $integer)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetRoundStartPlayerCount()
-    {
-        return arrayToString($this->clientRequest('vars.roundStartPlayerCount'));
+        return arrayToInteger($this->clientRequest('vars.roundRestartPlayerCount'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetRoundStartPlayerCount($integer)
+    public function adminVarSetRoundRestartPlayerCount($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.roundStartPlayerCount %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.roundRestartPlayerCount %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetRoundTimeLimit()
+    public function adminVarGetRoundStartPlayerCount(): int
     {
-        return arrayToString($this->clientRequest('vars.roundTimeLimit'));
+        return arrayToInteger($this->clientRequest('vars.roundStartPlayerCount'));
+    }
+
+    /**
+     * @param $integer
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetRoundStartPlayerCount($integer): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.roundStartPlayerCount %s', $integer)), 0);
+    }
+
+    /**
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetRoundTimeLimit(): int
+    {
+        return arrayToInteger($this->clientRequest('vars.roundTimeLimit'));
     }
 
     /**
      * @param $percentage
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetRoundTimeLimit($percentage)
+    public function adminVarSetRoundTimeLimit($percentage): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.roundTimeLimit %s', $percentage)));
+        return arrayToString($this->clientRequest(sprintf('vars.roundTimeLimit %s', $percentage)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetRoundWarmupTimeout()
+    public function adminVarGetRoundWarmupTimeout(): int
     {
-        return arrayToString($this->clientRequest('vars.roundWarmupTimeout'));
+        return arrayToInteger($this->clientRequest('vars.roundWarmupTimeout'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetRoundWarmupTimeout($integer)
+    public function adminVarSetRoundWarmupTimeout($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.roundWarmupTimeout %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.roundWarmupTimeout %s', $integer)), 0);
     }
 
     /**
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetServerDescription()
+    public function adminVarGetServerDescription(): string
     {
         return arrayToString($this->clientRequest('vars.serverDescription'));
     }
@@ -1028,16 +1084,18 @@ class BattlefieldConn
      * @param $string
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetServerDescription($string)
+    public function adminVarSetServerDescription($string): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.serverDescription %s', $string)));
+        return arrayToString($this->clientRequest(sprintf('vars.serverDescription %s', $string)), 0);
     }
 
     /**
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetServerMessage()
+    public function adminVarGetServerMessage(): string
     {
         return arrayToString($this->clientRequest('vars.serverMessage'));
     }
@@ -1046,16 +1104,18 @@ class BattlefieldConn
      * @param $string
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetServerMessage($string)
+    public function adminVarSetServerMessage($string): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.serverMessage %s', $string)));
+        return arrayToString($this->clientRequest(sprintf('vars.serverMessage %s', $string)), 0);
     }
 
     /**
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetServerName()
+    public function adminVarGetServerName(): string
     {
         return arrayToString($this->clientRequest('vars.serverName'));
     }
@@ -1064,136 +1124,152 @@ class BattlefieldConn
      * @param $string
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetServerName($string)
+    public function adminVarSetServerName($string): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.serverName %s', $string)));
+        return arrayToString($this->clientRequest(sprintf('vars.serverName %s', $string)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetSoldierHealth()
+    public function adminVarGetSoldierHealth(): int
     {
-        return arrayToString($this->clientRequest('vars.soldierHealth'));
-    }
-
-    /**
-     * @param $integer
-     *
-     * @return string
-     */
-    public function adminVarSetSoldierHealth($integer)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.soldierHealth %s', $integer)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetTeamKillKickForBan()
-    {
-        return arrayToString($this->clientRequest('vars.teamKillKickForBan'));
+        return arrayToInteger($this->clientRequest('vars.soldierHealth'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetTeamKillKickForBan($integer)
+    public function adminVarSetSoldierHealth($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.teamKillKickForBan %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.soldierHealth %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetTeamKillValueDecreasePerSecond()
+    public function adminVarGetTeamKillKickForBan(): int
     {
-        return arrayToString($this->clientRequest('vars.teamKillValueDecreasePerSecond'));
-    }
-
-    /**
-     * @param $integer
-     *
-     * @return string
-     */
-    public function adminVarSetTeamKillValueDecreasePerSecond($integer)
-    {
-        return arrayToString($this->clientRequest(sprintf('vars.teamKillValueDecreasePerSecond %s', $integer)));
-    }
-
-    /**
-     * @return string
-     */
-    public function adminVarGetTeamKillCountForKick()
-    {
-        return arrayToString($this->clientRequest('vars.teamKillCountForKick'));
+        return arrayToInteger($this->clientRequest('vars.teamKillKickForBan'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetTeamKillCountForKick($integer)
+    public function adminVarSetTeamKillKickForBan($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.teamKillCountForKick %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.teamKillKickForBan %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetTeamKillValueForKick()
+    public function adminVarGetTeamKillValueDecreasePerSecond(): int
     {
-        return arrayToString($this->clientRequest('vars.teamKillCountForKick'));
+        return arrayToInteger($this->clientRequest('vars.teamKillValueDecreasePerSecond'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetTeamKillValueForKick($integer)
+    public function adminVarSetTeamKillValueDecreasePerSecond($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.teamKillCountForKick %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.teamKillValueDecreasePerSecond %s', $integer)), 0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetVehicleSpawnAllowed()
+    public function adminVarGetTeamKillCountForKick(): int
     {
-        return arrayToString($this->clientRequest('vars.vehicleSpawnAllowed'));
+        return arrayToInteger($this->clientRequest('vars.teamKillCountForKick'));
+    }
+
+    /**
+     * @param $integer
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetTeamKillCountForKick($integer): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.teamKillCountForKick %s', $integer)), 0);
+    }
+
+    /**
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetTeamKillValueForKick(): int
+    {
+        return arrayToInteger($this->clientRequest('vars.teamKillCountForKick'));
+    }
+
+    /**
+     * @param $integer
+     *
+     * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarSetTeamKillValueForKick($integer): string
+    {
+        return arrayToString($this->clientRequest(sprintf('vars.teamKillCountForKick %s', $integer)), 0);
+    }
+
+    /**
+     * @return bool
+     * @throws \BFACP\Exceptions\Adkats\RconException
+     */
+    public function adminVarGetVehicleSpawnAllowed(): bool
+    {
+        return arrayToBoolean($this->clientRequest('vars.vehicleSpawnAllowed'));
     }
 
     /**
      * @param $boolean
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetVehicleSpawnAllowed($boolean)
+    public function adminVarSetVehicleSpawnAllowed($boolean): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.vehicleSpawnAllowed %s', $boolean)));
+        return arrayToString($this->clientRequest(sprintf('vars.vehicleSpawnAllowed %s', booleanToString($boolean))),
+            0);
     }
 
     /**
-     * @return string
+     * @return int
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarGetVehicleSpawnDelay()
+    public function adminVarGetVehicleSpawnDelay(): int
     {
-        return arrayToString($this->clientRequest('vars.vehicleSpawnDelay'));
+        return arrayToInteger($this->clientRequest('vars.vehicleSpawnDelay'));
     }
 
     /**
      * @param $integer
      *
      * @return string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
-    public function adminVarSetVehicleSpawnDelay($integer)
+    public function adminVarSetVehicleSpawnDelay($integer): string
     {
-        return arrayToString($this->clientRequest(sprintf('vars.vehicleSpawnDelay %s', $integer)));
+        return arrayToString($this->clientRequest(sprintf('vars.vehicleSpawnDelay %s', $integer)), 0);
     }
 
     /**
@@ -1201,6 +1277,7 @@ class BattlefieldConn
      * @param string $reason
      *
      * @return mixed|string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminKickPlayer($player, $reason = 'Kicked by administrator')
     {
@@ -1228,6 +1305,7 @@ class BattlefieldConn
      * @param string $reason
      *
      * @return mixed|string
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminKillPlayer($player, $reason = 'Killed by administrator')
     {
@@ -1260,7 +1338,10 @@ class BattlefieldConn
      *
      * @param string $subset
      *
+     * @param array  $prams
+     *
      * @return array
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function listPlayers($subset = 'all', $prams = []): array
     {
@@ -1278,6 +1359,7 @@ class BattlefieldConn
 
     /**
      * @return \BFACP\Libraries\BattlefieldConn
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     public function adminVarGetTeamFactions(): BattlefieldConn
     {
@@ -1491,6 +1573,7 @@ class BattlefieldConn
      * @param $clientRequest
      *
      * @return mixed
+     * @throws \BFACP\Exceptions\Adkats\RconException
      */
     private function clientRequest($clientRequest)
     {
