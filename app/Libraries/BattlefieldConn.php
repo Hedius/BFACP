@@ -55,7 +55,7 @@ class BattlefieldConn
      */
     const LOGIN_FAILED = 'LoginFailed';
 
-    /*
+    /**
      * Invalid arguments response.
      */
     const INVALID_ARGUMENTS = 'InvalidArguments';
@@ -79,6 +79,26 @@ class BattlefieldConn
      * Command is read only.
      */
     const COMMAND_READ_ONLY = 'CommandIsReadOnly';
+
+    /**
+     * Battlefield 3
+     */
+    const BF3 = 'BF3';
+
+    /**
+     * Battlefield 4
+     */
+    const BF4 = 'BF4';
+
+    /**
+     * Battlefield: Bad Company 2
+     */
+    const BC2 = 'BFBC2';
+
+    /**
+     * Battlefield Hardline
+     */
+    const BFH = 'BFHL';
 
     /**
      * @var \BFACP\Realm\Server
@@ -146,12 +166,13 @@ class BattlefieldConn
     public function __construct(Server $server, $debug = false)
     {
         $this->server = $server;
-        $this->battlelog = app(BattlelogServer::class);
-        $this->battlelog->setServer($this->server);
 
-        $this->rconCache['squadNames'] = (json_decode(file_get_contents(resource_path('configs/battlefield/squadNames.json')),
-            true))['squads'];
+        if ($this->getCurrentGame() != self::BC2) {
+            $this->battlelog = app(BattlelogServer::class);
+            $this->battlelog->setServer($this->server);
+        }
 
+        $this->loadConfigs();
         $this->openConnection($debug);
         $this->getServerInfo();
         $this->getServerVersion();
@@ -176,6 +197,7 @@ class BattlefieldConn
 
         if ($loginStatus == self::DEFAULT_GAME_SERVER_RESPONSE) {
             $this->isLoggedIn = true;
+            $this->adminVarGetTeamFactions();
 
             return $loginStatus;
         }
@@ -198,6 +220,7 @@ class BattlefieldConn
 
         if ($loginStatus == self::DEFAULT_GAME_SERVER_RESPONSE) {
             $this->isLoggedIn = true;
+            $this->adminVarGetTeamFactions();
 
             return $loginStatus;
         }
@@ -232,15 +255,20 @@ class BattlefieldConn
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getServerInfo()
+    public function getServerInfo(): array
     {
         if (is_null($this->data['server'])) {
-            $this->data['server'] = $this->clientRequest('serverinfo');
+            $command = in_array($this->getCurrentGame(), [self::BC2, self::BF3]) ? 'serverInfo' : 'serverinfo';
+
+            $req = $this->clientRequest($command);
+            array_shift($req);
+
+            $this->data['server'] = $req;
         }
 
-        if (empty($this->data['battlelog'])) {
+        if (! is_null($this->battlelog) && empty($this->data['battlelog'])) {
             $this->data['battlelog'] = $this->battlelog->getServerInfo();
         }
 
@@ -253,7 +281,7 @@ class BattlefieldConn
     public function getServerVersion(): int
     {
         if (is_null($this->data['server_version'])) {
-            $this->data['server_version'] = (int) $this->clientRequest('version')[2];
+            $this->data['server_version'] = (int) arrayToString($this->clientRequest('version'), 2);
         }
 
         return $this->data['server_version'];
@@ -264,7 +292,7 @@ class BattlefieldConn
      */
     public function getServerName(): string
     {
-        return $this->getServerInfo()[1];
+        return arrayToString($this->getServerInfo(), 0);
     }
 
     /**
@@ -272,7 +300,7 @@ class BattlefieldConn
      */
     public function getCurrentPlayers(): int
     {
-        return $this->getServerInfo()[2];
+        return arrayToString($this->getServerInfo(), 1);
     }
 
     /**
@@ -280,7 +308,7 @@ class BattlefieldConn
      */
     public function getMaxPlayers(): int
     {
-        return $this->getServerInfo()[3];
+        return arrayToString($this->getServerInfo(), 2);
     }
 
     /**
@@ -288,13 +316,14 @@ class BattlefieldConn
      *
      * @return bool|string
      */
-    public function getCurrentGameMode($isGameType = null)
+    public function getCurrentGameMode($isGameType = null, $readable = true)
     {
+        $gametype = arrayToString($this->getServerInfo(), 3);
         if (! is_null($isGameType)) {
-            return $this->getServerInfo()[4] == $isGameType;
+            return $gametype == $isGameType;
         }
 
-        return (string) $this->getServerInfo()[4];
+        return $readable ? $this->rconCache['modes'][$gametype] : $gametype;
     }
 
     /**
@@ -302,7 +331,9 @@ class BattlefieldConn
      */
     public function getCurrentMap(): string
     {
-        return $this->getServerInfo()[5];
+        $mapCode = arrayToString($this->getServerInfo(), 4);
+
+        return $this->rconCache['maps'][$mapCode];
     }
 
     /**
@@ -310,7 +341,7 @@ class BattlefieldConn
      */
     public function getRoundsPlayed(): int
     {
-        return $this->getServerInfo()[6];
+        return arrayToString($this->getServerInfo(), 5);
     }
 
     /**
@@ -318,7 +349,7 @@ class BattlefieldConn
      */
     public function getTotalRounds(): int
     {
-        return $this->getServerInfo()[7];
+        return arrayToString($this->getServerInfo(), 6);
     }
 
     /**
@@ -326,22 +357,25 @@ class BattlefieldConn
      */
     public function getTeamScores(): array
     {
-        switch ($this->getCurrentGameMode()) {
-            case "CarrierAssaultSmall0":
-            case "CarrierAssaultLarge0":
-                // Leave defaults in place
+        switch ($this->getCurrentGame()) {
+            case self::BF4:
+                switch ($this->getCurrentGameMode()) {
+                    case "CarrierAssaultSmall0":
+                    case "CarrierAssaultLarge0":
+                        // Leave defaults in place
+                        break;
+                    case "SquadObliteration0":
+                    case "SquadDeathmatch0":
+                        $this->data['team_scores']['team1'] = (int) $this->getServerInfo()[8];
+                        $this->data['team_scores']['team2'] = (int) $this->getServerInfo()[9];
+                        $this->data['team_scores']['team3'] = (int) $this->getServerInfo()[10];
+                        $this->data['team_scores']['team4'] = (int) $this->getServerInfo()[11];
+                        break;
+                    default:
+                        $this->data['team_scores']['team1'] = (int) $this->getServerInfo()[8];
+                        $this->data['team_scores']['team2'] = (int) $this->getServerInfo()[9];
+                }
                 break;
-            case "SquadObliteration0":
-            case "Obliteration":
-            case "SquadDeathmatch0":
-                $this->data['team_scores']['team1'] = $this->getServerInfo()[9];
-                $this->data['team_scores']['team2'] = $this->getServerInfo()[10];
-                $this->data['team_scores']['team3'] = $this->getServerInfo()[11];
-                $this->data['team_scores']['team4'] = $this->getServerInfo()[12];
-                break;
-            default:
-                $this->data['team_scores']['team1'] = $this->getServerInfo()[9];
-                $this->data['team_scores']['team2'] = $this->getServerInfo()[10];
         }
 
         return $this->data['team_scores'];
@@ -353,34 +387,31 @@ class BattlefieldConn
     public function getServerUptime()
     {
         $serverInfo = $this->getServerInfo();
-        $len = count($serverInfo);
+        //$len = count($serverInfo);
 
-        if ($this->server->game->Name == 'BF4') {
-            switch ($this->getCurrentGameMode()) {
-                case 'SquadDeathMatch0':
-                case 'TeamDeathMatch0':
+        $uptime = null;
 
-                    $ticketcap = $len < 28 ? null : intval($serverInfo[13]);
-                    $uptime = $len < 28 ? (int) $serverInfo[14] : (int) $serverInfo[18];
-                    $round = $len < 28 ? (int) $serverInfo[15] : (int) $serverInfo[19];
-                    break;
-                case 'CaptureTheFlag0':
-                case 'Obliteration':
-                case 'Chainlink0':
-                case 'RushLarge0':
-                case 'Domination0':
-                case 'ConquestLarge0':
-                case 'ConquestSmall0':
-                    if ($this->getCurrentGameMode('CaptureTheFlag0')) {
-                        $ticketcap = null;
-                    } else {
-                        $ticketcap = $len < 26 ? null : intval($serverInfo[11]);
-                    }
-                    $uptime = $len < 26 ? (int) $serverInfo[14] : (int) $serverInfo[16];
-                    $round = $len < 26 ? (int) $serverInfo[15] : (int) $serverInfo[17];
-                    break;
-            }
+        switch ($this->getCurrentGame()) {
+            case self::BF4:
+                switch ($this->getCurrentGameMode(null, false)) {
+                    case 'CaptureTheFlag0':
+                    case 'Obliteration':
+                    case 'Chainlink0':
+                    case 'RushLarge0':
+                    case 'Domination0':
+                    case 'ConquestLarge0':
+                    case 'ConquestSmall0':
+                        $uptime = (int) arrayToString($serverInfo, 15);
+                        break;
+                    case 'SquadDeathMatch0':
+                    case 'TeamDeathMatch0':
+                        $uptime = (int) arrayToString($serverInfo, 13);
+                        break;
+                }
+                break;
         }
+
+        return $uptime;
     }
 
     /**
@@ -553,346 +584,624 @@ class BattlefieldConn
         return arrayToString($this->clientRequest(sprintf('vars.autoBalance %s', booleanToString($boolean))), 0);
     }
 
+    /**
+     * @return int
+     */
     public function adminVarGetBulletDamage(): int
     {
         return arrayToString($this->clientRequest('vars.bulletDamage'));
     }
 
+    /**
+     * @param $modifier
+     *
+     * @return int
+     */
     public function adminVarSetBulletDamage($modifier): int
     {
         return arrayToString($this->clientRequest(sprintf('vars.bulletDamage %s', $modifier)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetCommander()
     {
         return arrayToString($this->clientRequest('vars.commander'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return mixed
+     */
     public function adminVarSetCommander($boolean)
     {
         return $this->clientRequest(sprintf('vars.commander %s', booleanToString($boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetcrossHair()
     {
         return arrayToString($this->clientRequest('vars.crossHair'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetcrossHair($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.crossHair %s', booleanToString($boolean))));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetForceReloadWholeMags()
     {
         return arrayToString($this->clientRequest('vars.forceReloadWholeMags'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetForceReloadWholeMags($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.forceReloadWholeMags %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetFriendlyFire()
     {
         return arrayToString($this->clientRequest('vars.friendlyFire'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetFriendlyFire($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.friendlyFire %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetGameModeCounter()
     {
         return arrayToString($this->clientRequest('vars.gameModeCounter'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetGameModeCounter($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.gameModeCounter %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetHitIndicators()
     {
         return arrayToString($this->clientRequest('vars.hitIndicatorsEnabled'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetHitIndicators($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.hitIndicatorsEnabled %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetHud()
     {
         return arrayToString($this->clientRequest('vars.hud'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetHud($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.hud %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetIdleBanRounds()
     {
         return arrayToString($this->clientRequest('vars.idleBanRounds'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetIdleBanRounds($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.idleBanRounds %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetIdleTimeout()
     {
         return arrayToString($this->clientRequest('vars.idleTimeout'));
     }
 
+    /**
+     * @param $seconds
+     *
+     * @return string
+     */
     public function adminVarSetIdleTimeout($seconds)
     {
         return arrayToString($this->clientRequest(sprintf('vars.idleTimeout %s', $seconds)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetKillCam()
     {
         return arrayToString($this->clientRequest('vars.killCam'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetKillCam($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.killCam %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetMaxPlayers()
     {
         return arrayToString($this->clientRequest('vars.maxPlayers'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetMaxPlayers($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.maxPlayers %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetMaxSpectators()
     {
         return arrayToString($this->clientRequest('vars.maxSpectators'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetMaxSpectators($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.maxSpectators %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetMiniMap()
     {
         return arrayToString($this->clientRequest('vars.miniMap'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetMiniMap($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.miniMap %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetMiniMapSpotting()
     {
         return arrayToString($this->clientRequest('vars.miniMapSpotting'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetMiniMapSpotting($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.miniMapSpotting %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetNameTag()
     {
         return arrayToString($this->clientRequest('vars.nameTag'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetNameTag($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.nameTag %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetOnlySquadLeaderSpawn()
     {
         return arrayToString($this->clientRequest('vars.onlySquadLeaderSpawn'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetOnlySquadLeaderSpawn($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.onlySquadLeaderSpawn %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetPlayerRespawnTime()
     {
         return arrayToString($this->clientRequest('vars.playerRespawnTime'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetPlayerRespawnTime($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.playerRespawnTime %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetRegenerateHealth()
     {
         return arrayToString($this->clientRequest('vars.regenerateHealth'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetRegenerateHealth($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.regenerateHealth %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetRoundLockdownCountdown()
     {
         return arrayToString($this->clientRequest('vars.roundLockdownCountdown'));
     }
 
+    /**
+     * @param $seconds
+     *
+     * @return string
+     */
     public function adminVarSetRoundLockdownCountdown($seconds)
     {
         return arrayToString($this->clientRequest(sprintf('vars.roundLockdownCountdown %s', $seconds)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetRoundRestartPlayerCount()
     {
         return arrayToString($this->clientRequest('vars.roundRestartPlayerCount'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetRoundRestartPlayerCount($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.roundRestartPlayerCount %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetRoundStartPlayerCount()
     {
         return arrayToString($this->clientRequest('vars.roundStartPlayerCount'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetRoundStartPlayerCount($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.roundStartPlayerCount %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetRoundTimeLimit()
     {
         return arrayToString($this->clientRequest('vars.roundTimeLimit'));
     }
 
+    /**
+     * @param $percentage
+     *
+     * @return string
+     */
     public function adminVarSetRoundTimeLimit($percentage)
     {
         return arrayToString($this->clientRequest(sprintf('vars.roundTimeLimit %s', $percentage)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetRoundWarmupTimeout()
     {
         return arrayToString($this->clientRequest('vars.roundWarmupTimeout'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetRoundWarmupTimeout($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.roundWarmupTimeout %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetServerDescription()
     {
         return arrayToString($this->clientRequest('vars.serverDescription'));
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
     public function adminVarSetServerDescription($string)
     {
         return arrayToString($this->clientRequest(sprintf('vars.serverDescription %s', $string)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetServerMessage()
     {
         return arrayToString($this->clientRequest('vars.serverMessage'));
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
     public function adminVarSetServerMessage($string)
     {
         return arrayToString($this->clientRequest(sprintf('vars.serverMessage %s', $string)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetServerName()
     {
         return arrayToString($this->clientRequest('vars.serverName'));
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
     public function adminVarSetServerName($string)
     {
         return arrayToString($this->clientRequest(sprintf('vars.serverName %s', $string)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetSoldierHealth()
     {
         return arrayToString($this->clientRequest('vars.soldierHealth'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetSoldierHealth($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.soldierHealth %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetTeamKillKickForBan()
     {
         return arrayToString($this->clientRequest('vars.teamKillKickForBan'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetTeamKillKickForBan($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.teamKillKickForBan %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetTeamKillValueDecreasePerSecond()
     {
         return arrayToString($this->clientRequest('vars.teamKillValueDecreasePerSecond'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetTeamKillValueDecreasePerSecond($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.teamKillValueDecreasePerSecond %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetTeamKillCountForKick()
     {
         return arrayToString($this->clientRequest('vars.teamKillCountForKick'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetTeamKillCountForKick($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.teamKillCountForKick %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetTeamKillValueForKick()
     {
         return arrayToString($this->clientRequest('vars.teamKillCountForKick'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetTeamKillValueForKick($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.teamKillCountForKick %s', $integer)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetVehicleSpawnAllowed()
     {
         return arrayToString($this->clientRequest('vars.vehicleSpawnAllowed'));
     }
 
+    /**
+     * @param $boolean
+     *
+     * @return string
+     */
     public function adminVarSetVehicleSpawnAllowed($boolean)
     {
         return arrayToString($this->clientRequest(sprintf('vars.vehicleSpawnAllowed %s', $boolean)));
     }
 
+    /**
+     * @return string
+     */
     public function adminVarGetVehicleSpawnDelay()
     {
         return arrayToString($this->clientRequest('vars.vehicleSpawnDelay'));
     }
 
+    /**
+     * @param $integer
+     *
+     * @return string
+     */
     public function adminVarSetVehicleSpawnDelay($integer)
     {
         return arrayToString($this->clientRequest(sprintf('vars.vehicleSpawnDelay %s', $integer)));
     }
 
+    /**
+     * @param        $player
+     * @param string $reason
+     *
+     * @return mixed|string
+     */
     public function adminKickPlayer($player, $reason = 'Kicked by administrator')
     {
         $response = $this->clientRequest(sprintf('admin.kickPlayer %s %s', $player, $reason));
@@ -914,6 +1223,12 @@ class BattlefieldConn
         return $response;
     }
 
+    /**
+     * @param        $player
+     * @param string $reason
+     *
+     * @return mixed|string
+     */
     public function adminKillPlayer($player, $reason = 'Killed by administrator')
     {
         $response = $this->clientRequest(sprintf('admin.killPlayer %s', $player));
@@ -936,11 +1251,57 @@ class BattlefieldConn
     }
 
     /**
+     * Subset can be one of the following.
+     *
+     * all - all players on the server
+     * team <team number: integer> - all players in the specified team
+     * squad <team number: integer> <squad number: integer> - all players in the specified team+squad
+     * player <player name: string> - one specific player
+     *
+     * @param string $subset
+     *
      * @return array
      */
-    public function listPlayers(): array
+    public function listPlayers($subset = 'all', $prams = []): array
     {
-        return $this->tabulate($this->clientRequest('admin.listplayers all'));
+        $command = in_array($this->getCurrentGame(), [self::BC2, self::BF3]) ? sprintf('admin.listPlayers %s',
+            $subset) : sprintf('admin.listplayers %s', $subset);
+
+        if (! empty($prams)) {
+            foreach ($prams as $pram) {
+                $command .= ' ' . $pram;
+            }
+        }
+
+        return $this->tabulate($this->clientRequest($command));
+    }
+
+    /**
+     * @return \BFACP\Libraries\BattlefieldConn
+     */
+    public function adminVarGetTeamFactions(): BattlefieldConn
+    {
+        $factionOverrides = $this->clientRequest('vars.teamFactionOverride');
+        array_shift($factionOverrides);
+
+        foreach ($factionOverrides as $key => $team) {
+            switch ((int) $team) {
+                case 0:
+                    // US Army
+                    $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][1];
+                    break;
+                case 1:
+                    // Russian Army
+                    $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][2];
+                    break;
+                case 2:
+                    // Chinese Army
+                    $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][3];
+                    break;
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -951,6 +1312,38 @@ class BattlefieldConn
     protected function getSquadName($id): string
     {
         return $this->rconCache['squadNames'][$id];
+    }
+
+    /**
+     * @param $id
+     *
+     * @return string
+     */
+    protected function getTeamName($id)
+    {
+        if ($this->getCurrentGame() == self::BF4) {
+            return $this->rconCache['factions'][$id];
+        }
+
+        return $this->rconCache['teams'][$id];
+    }
+
+    /**
+     * @return $this
+     */
+    private function loadConfigs()
+    {
+        $squadsPath = resource_path('configs/battlefield/squadNames.json');
+        $mapsPath = resource_path(sprintf('configs/battlefield/%s/maps.json', $this->getCurrentGame()));
+        $modesPath = resource_path(sprintf('configs/battlefield/%s/modes.json', $this->getCurrentGame()));
+        $teamsPath = resource_path(sprintf('configs/battlefield/%s/teams.json', $this->getCurrentGame()));
+
+        $this->rconCache['maps'] = json_decode(file_get_contents($mapsPath), true);
+        $this->rconCache['modes'] = json_decode(file_get_contents($modesPath), true);
+        $this->rconCache['teams'] = json_decode(file_get_contents($teamsPath), true);
+        $this->rconCache['squadNames'] = json_decode(file_get_contents($squadsPath), true)['squads'];
+
+        return $this;
     }
 
     /**
@@ -970,10 +1363,13 @@ class BattlefieldConn
             $columns[] = $res[$i];
         }
 
-        if ($this->getCurrentGame() == 'BF3') {
-            $nRows = $res[10];
-        } else {
-            $nRows = $res[11];
+        switch ($this->getCurrentGame()) {
+            case self::BF3:
+            case self::BC2:
+                $nRows = $res[10];
+                break;
+            default:
+                $nRows = $res[11];
         }
 
         $rows = [
@@ -991,6 +1387,7 @@ class BattlefieldConn
             }
 
             $row['meta']['squadName'] = $this->getSquadName($row['squadId']);
+            $row['meta']['teamName'] = $this->getTeamName($row['teamId']);
 
             $rows['players'][] = $row;
         }
