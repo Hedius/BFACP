@@ -89,3 +89,17 @@ if (! function_exists('arrayToString'))
         return $array[$key];
     }
 }
+
+if (! function_exists('arrayToInteger'))
+{
+    /**
+     * @param     $array
+     * @param int $key
+     *
+     * @return int
+     */
+    function arrayToInteger($array, $key = 1): int
+    {
+        return (int) $array[$key];
+    }
+}
