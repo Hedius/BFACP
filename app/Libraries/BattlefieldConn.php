@@ -287,7 +287,7 @@ class BattlefieldConn
     public function getServerVersion(): int
     {
         if (is_null($this->data['server_version'])) {
-            $this->data['server_version'] = (int) arrayToString($this->clientRequest('version'), 2);
+            $this->data['server_version'] = arrayToInteger($this->clientRequest('version'), 2);
         }
 
         return $this->data['server_version'];
@@ -308,7 +308,7 @@ class BattlefieldConn
      */
     public function getCurrentPlayers(): int
     {
-        return arrayToString($this->getServerInfo(), 1);
+        return arrayToInteger($this->getServerInfo(), 1);
     }
 
     /**
@@ -317,7 +317,7 @@ class BattlefieldConn
      */
     public function getMaxPlayers(): int
     {
-        return arrayToString($this->getServerInfo(), 2);
+        return arrayToInteger($this->getServerInfo(), 2);
     }
 
     /**
@@ -355,7 +355,7 @@ class BattlefieldConn
      */
     public function getRoundsPlayed(): int
     {
-        return arrayToString($this->getServerInfo(), 5);
+        return arrayToInteger($this->getServerInfo(), 5);
     }
 
     /**
@@ -364,7 +364,7 @@ class BattlefieldConn
      */
     public function getTotalRounds(): int
     {
-        return arrayToString($this->getServerInfo(), 6);
+        return arrayToInteger($this->getServerInfo(), 6);
     }
 
     /**
@@ -1508,6 +1508,7 @@ class BattlefieldConn
             $this->connection = socket_connect($this->sock, $this->server->ip, $this->server->port);
 
             if ($debug) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Log::debug(socket_strerror(socket_last_error()));
             }
 
@@ -1517,6 +1518,7 @@ class BattlefieldConn
 
             $this->sockType = 1;
         } catch (RconException $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Log::error($e->getMessage());
             try {
                 $this->checkFuncs('fsockopen');
@@ -1524,12 +1526,14 @@ class BattlefieldConn
                 $this->sock = fsockopen('tcp://' . $this->server->ip, $this->server->port, $errno, $errstr, 5);
 
                 if ($debug) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Log::debug(sprintf('%s - %s', $errno, $errstr));
                 }
 
                 $this->connection = $this->sock;
                 $this->sockType = 2;
             } catch (RconException $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Log::error($e->getMessage());
             }
         }
@@ -1586,7 +1590,11 @@ class BattlefieldConn
         }
 
         $receiveBuffer = '';
+        /** @noinspection PhpUnusedLocalVariableInspection */
         list($packet, $receiveBuffer) = $this->_receivePacket($receiveBuffer);
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpUnusedLocalVariableInspection */
         list($isFromServer, $isResponse, $sequence, $requestAnswer) = $this->_decodePacket($packet);
 
         return $requestAnswer;
@@ -1834,7 +1842,6 @@ class BattlefieldConn
                                 } else {
                                     if ($data[0] == 'admin.killPlayer' && isset($data[1])) {
                                         $adminKillPlayer = [$data[0], ''];
-                                        $i = 0;
                                         foreach ($data as $key => $value) {
                                             if ($key != 0) {
                                                 $adminKillPlayer[1] .= $value . ' ';
@@ -1848,7 +1855,6 @@ class BattlefieldConn
                                         if ($data[0] == 'admin.movePlayer' && isset($data[1])) {
                                             $dataCount = count($data) - 3;
                                             $adminMovePlayer = [$data[0], '', '', '', ''];
-                                            $i = 0;
                                             foreach ($data as $key => $value) {
                                                 if ($key != 0 && $key < $dataCount) {
                                                     $adminMovePlayer[1] .= $value . ' ';
@@ -1942,11 +1948,12 @@ class BattlefieldConn
     {
         $errMsg = sprintf('Could not read packet data from game server %s (%s).', $this->server->ServerName,
             $this->server->ip);
-        $count = 0;
+
         while (! $this->_containsCompletePacket($receiveBuffer)) {
             if ($this->sockType == 1) {
                 $socketbuffer = @socket_read($this->sock, 4096);
                 if ($socketbuffer == false) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Log::error($errMsg);
                     throw new RconException('Could not read packet data from game server.');
                 }
@@ -1954,6 +1961,7 @@ class BattlefieldConn
             } else {
                 $socketbuffer = fread($this->sock, 4096);
                 if ($socketbuffer == false) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Log::error($errMsg);
                     throw new RconException('Could not read packet data from game server.');
                 }
@@ -2045,7 +2053,6 @@ class BattlefieldConn
      */
     private function _decodeWords($size, $data)
     {
-        $numWords = $this->_decodeInt32($data);
         $words = [];
         $offset = 0;
         while ($offset < $size) {
