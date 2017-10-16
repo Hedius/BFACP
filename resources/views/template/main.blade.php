@@ -17,7 +17,10 @@
                     @include('template.body-breadcrumbs')
 
                     <div class="container">
-                        @yield('section')
+                        <div class="section">
+                            @yield('content')
+                            <div class="divider"></div>
+                        </div>
                     </div>
                 </section>
             </div>
