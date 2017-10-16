@@ -11,4 +11,6 @@
 |
 */
 
-Route::get('player/listing', 'Player\ListingController@showListing');
+Route::get('/', function () {
+    return view('welcome');
+});

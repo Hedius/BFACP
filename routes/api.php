@@ -44,23 +44,4 @@ Route::namespace('Api')->group(function () {
     ]);
 
     Route::resource('ban', 'Adkats\BanController');
-
-    Route::get('battlelog', function () {
-        $serversDisplay = [];
-        $servers = \BFACP\Realm\Server::whereIn('ServerID', [3])->get();
-
-        foreach ($servers as $server) {
-            $rcon = new \BFACP\Libraries\BattlefieldConn($server);
-            $rcon->loginSecure('9UTEYoVW');
-
-            if($rcon->isLoggedIn()) {
-                $serversDisplay[$server->game->Name][$server->slug] = [
-                    'playerlist' => $rcon->listPlayers(),
-                ];
-                unset($rcon);
-            }
-        }
-
-        return $serversDisplay;
-    });
 });
