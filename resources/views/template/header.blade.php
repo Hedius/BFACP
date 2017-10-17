@@ -14,10 +14,7 @@
 <meta name="msapplication-TileImage" content="{{ url('images/favicon/mstile-144x144.png') }}">
 <!-- For Windows Phone -->
 <!-- CORE CSS-->
-<link href="{{ url('css/themes/semi-dark-menu/materialize.min.css') }}" type="text/css" rel="stylesheet">
-<link href="{{ url('css/themes/semi-dark-menu/materialize.min.css') }}" type="text/css" rel="stylesheet">
-<!-- Custome CSS-->
-<link href="{{ url('css/custom/custom/css') }}" type="text/css" rel="stylesheet">
+<link href="{{ url('css/themes/semi-dark-menu/materialize.css') }}" type="text/css" rel="stylesheet">
 <!-- INCLUDED PLUGIN CSS ON THIS PAGE -->
 <link href="{{ url('vendors/perfect-scrollbar/perfect-scrollbar.css') }}" type="text/css" rel="stylesheet">
 <link href="{{ url('vendors/flag-icon/css/flag-icon.min.css') }}" type="text/css" rel="stylesheet">
