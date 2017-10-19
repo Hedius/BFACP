@@ -5,8 +5,7 @@
           <span>Copyright ©
             <script type="text/javascript">
               document.write(new Date().getFullYear());
-            </script> <a class="grey-text text-darken-2" href="http://themeforest.net/user/pixinvent/portfolio?ref=pixinvent" target="_blank">PIXINVENT</a> All rights reserved.</span>
-            <span class="right hide-on-small-only"> Design and Developed by <a class="grey-text text-darken-2" href="https://pixinvent.com/">PIXINVENT</a></span>
+            </script> <a class="grey-text text-darken-2" href="https://github.com/AdKats/BFAdminCP" target="_blank">AdKats - BFACP</a> All rights reserved.</span>
         </div>
     </div>
 </footer>

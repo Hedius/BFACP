@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('players.player-listing');
 });
+
+Route::namespace('Player')->group(function () {
+    Route::get('player/listing', 'ListingController@showListing');
+});
