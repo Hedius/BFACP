@@ -4,7 +4,7 @@
     <p class="caption">Test Player List - {{ number_format(\BFACP\Realm\Player::count()) }}</p>
 
     @php
-    var_dump($response)
+    var_dump($response);
     @endphp
     <table class="bordered">
         <thead>
