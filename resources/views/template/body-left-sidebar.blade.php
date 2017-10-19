@@ -2,8 +2,7 @@
 <aside id="left-sidebar-nav" class="nav-expanded nav-lock nav-collapsible">
     <div class="brand-sidebar">
         <h1 class="logo-wrapper">
-            {{ link_to_url() }}
-            <a href="" class="brand-logo darken-1">
+            <a href="/" class="brand-logo darken-1">
                 <img src="../../images/logo/materialize-logo.png" alt="materialize logo">
                 <span class="logo-text hide-on-med-and-down">BFACP</span>
             </a>
