@@ -1,11 +1,35 @@
-/*================================================================================
-	Item Name: Materialize - Material Design Admin Template
-	Version: 4.0
-	Author: PIXINVENT
-	Author URL: https://themeforest.net/user/pixinvent/portfolio
-================================================================================
+var bfacp = angular.module('bfacp', ['ngResource', 'ui.materialize']);
 
-NOTE:
-------
-PLACE HERE YOUR OWN JS CODES AND IF NEEDED.
-WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR CUSTOM SCRIPT IT'S BETTER LIKE THIS. */
+/*=============================================
+=            BFACP Factory's                  =
+=============================================*/
+
+bfacp.factory('Player', function ($resource) {
+    return $resource('/api/player/:playerId', {}, {
+        query: {
+            method: 'GET',
+            params: {playerId: '@playerId'}
+        }
+    });
+});
+
+/*=============================================
+=            BFACP Controllers                =
+=============================================*/
+
+bfacp.controller('PlayerListController', function PlayerListController(Player, $scope) {
+    $scope.players = [];
+    $scope.meta = {};
+
+    Player.query().$promise.then(function (response) {
+        $scope.players = response.data;
+        $scope.meta = response.meta;
+    });
+
+    $scope.changePage = function (page) {
+        Player.query({page: page}).$promise.then(function (response) {
+            $scope.players = response.data;
+            $scope.meta = response.meta;
+        });
+    }
+});
