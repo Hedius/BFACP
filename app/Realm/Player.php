@@ -4,6 +4,7 @@ namespace BFACP\Realm;
 
 use BFACP\Realm\Adkats\Battlelog;
 use BFACP\Realm\Adkats\Record;
+use BFACP\Realm\Player\Stats;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -77,5 +78,13 @@ class Player extends Model
     public function hasPersona(): bool
     {
         return ! empty($this->battlelog);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function stats()
+    {
+        return $this->hasManyThrough(Stats::class, \BFACP\Realm\Player\Server::class, 'PlayerID', 'StatsID');
     }
 }
