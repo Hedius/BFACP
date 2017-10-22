@@ -1,14 +1,16 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "adkats/bfacp",
+    "description": "A web based admin tool for AdKats, a plugin for procon.",
+    "keywords": ["adkats", "bfacp", "procon", "web admin"],
+    "license": "proprietary",
+    "homepage": "https://github.com/AdKats/BFAdminCP",
     "type": "project",
     "require": {
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "lavary/laravel-menu": "^1.7"
     },
     "autoload": {
         "classmap": [
