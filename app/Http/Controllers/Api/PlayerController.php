@@ -24,7 +24,19 @@ class PlayerController extends Controller
      */
     public function index(Player $player)
     {
-        return PlayerResource::collection($player->paginate(100));
+        if (($queryLimit = request()->get('take', 30)) > 200) {
+            $queryLimit = 200;
+        }
+
+        if (request()->has('playerName')) {
+            $players = PlayerResource::collection(
+                $player->where('SoldierName', 'LIKE', request()->get('playerName') . '%')->paginate($queryLimit)
+            );
+        } else {
+            $players = PlayerResource::collection($player->orderBy('PlayerID', 'desc')->paginate($queryLimit));
+        }
+
+        return $players;
     }
 
     /**
