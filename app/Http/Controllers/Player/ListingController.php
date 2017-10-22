@@ -2,9 +2,7 @@
 
 namespace BFACP\Http\Controllers\Player;
 
-use Illuminate\Http\Request;
 use BFACP\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Route;
 
 /**
  * Class ListingController
@@ -13,15 +11,10 @@ use Illuminate\Support\Facades\Route;
 class ListingController extends Controller
 {
     /**
-     * @param \Illuminate\Http\Request $request
-     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function showListing(Request $request)
+    public function showListing()
     {
-        $request = $request->create(route('player.index', [], false));
-        $response = Route::dispatch($request);
-
-        return view('players.player-listing', ['response' => $response]);
+        return view('players.player-listing');
     }
 }
