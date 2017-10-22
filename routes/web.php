@@ -12,9 +12,9 @@
 */
 
 Route::get('/', function () {
-    return view('players.player-listing');
+    return 'To Be Created';
 });
 
 Route::namespace('Player')->group(function () {
-    Route::get('player/listing', 'ListingController@showListing');
+    Route::get('player/listing', 'ListingController@showListing')->name('player.listing');
 });
