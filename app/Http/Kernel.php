@@ -39,10 +39,11 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \BFACP\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \BFACP\Http\Middleware\MenuMiddleware::class,
         ],
 
         'api' => [
-            'throttle:60,1',
+            'throttle:150,1',
             'bindings',
         ],
     ];
