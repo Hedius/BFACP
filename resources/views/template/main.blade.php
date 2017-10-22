@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="bfacp">
     <head>
         @include('template.header')
     </head>
@@ -17,10 +17,7 @@
                     @include('template.body-breadcrumbs')
 
                     <div class="container">
-                        <div class="section">
-                            @yield('content')
-                            <div class="divider"></div>
-                        </div>
+                        @yield('content')
                     </div>
                 </section>
             </div>
