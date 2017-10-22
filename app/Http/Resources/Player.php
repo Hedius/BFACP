@@ -2,6 +2,7 @@
 
 namespace BFACP\Http\Resources;
 
+use BFACP\Http\Resources\Game as GameResource;
 use Illuminate\Http\Resources\Json\Resource;
 
 /**
@@ -22,19 +23,22 @@ class Player extends Resource
         return [
             'id'        => $this->PlayerID,
             'name'      => $this->SoldierName,
-            'clantag'   => $this->ClanTag,
+            'clantag'   => empty($this->ClanTag) ? null : $this->ClanTag,
             'ip'        => $this->IP_Address,
+            'game'      => new GameResource($this->game),
             'guids'     => [
                 'pb' => $this->PBGUID,
                 'ea' => $this->EAGUID,
             ],
             'battlelog' => [
-                'persona_id' => $this->battlelog->persona_id,
-                'user_id'    => (string) $this->battlelog->user_id,
-                'is_banned'  => $this->battlelog->is_banned,
+                'persona_id' => optional($this->battlelog)->persona_id,
+                'user_id'    => optional($this->battlelog)->user_id,
+                'is_banned'  => optional($this->battlelog)->is_banned,
             ],
             'meta'      => [
-                'discord_id' => isset($this->DiscordID) ? (int) $this->DiscordID : null,
+                'discord_id'   => optional($this->DiscordID),
+                'country_code' => $this->CountryCode,
+                'rank'         => $this->GlobalRank,
             ],
         ];
     }
