@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return 'To Be Created';
-});
+})->name('home');
 
 Route::namespace('Player')->group(function () {
     Route::get('player/listing', 'ListingController@showListing')->name('player.listing');
