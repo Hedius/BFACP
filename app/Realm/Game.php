@@ -31,6 +31,11 @@ class Game extends Model
     protected $guarded = ['*'];
 
     /**
+     * @var array
+     */
+    protected $appends = ['chip_class'];
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function servers()
@@ -38,4 +43,30 @@ class Game extends Model
         return $this->hasMany(Server::class, 'GameID');
     }
 
+    /**
+     * @return string
+     */
+    public function getChipClassAttribute()
+    {
+        $chipColor = 'white-text';
+
+        switch ($this->Name) {
+            case "BF3":
+                $chipColor .= ' cyan darken-3';
+                break;
+            case "BF4":
+                $chipColor .= ' teal darken-3';
+                break;
+            case "BFHL":
+                $chipColor .= ' blue darken-3';
+                break;
+            case "BFBC2":
+                $chipColor .= ' indigo darken-1';
+                break;
+            default:
+                $chipColor .= ' grey darken-4';
+        }
+
+        return $chipColor;
+    }
 }

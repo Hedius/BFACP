@@ -22,6 +22,7 @@ class Game extends Resource
         return [
             'id'      => $this->GameID,
             'label'   => $this->Name,
+            'chip_class'    => $this->chip_class,
             'servers' => Server::collection($this->whenLoaded('servers')),
         ];
     }
