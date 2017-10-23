@@ -48,6 +48,7 @@ class PlayerController extends Controller
      */
     public function show(Player $player)
     {
+        $player->load(['stats.server', 'sessions.server']);
         return response()->success(null, (new PlayerResource($player)));
     }
 

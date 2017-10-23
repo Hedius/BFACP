@@ -3,8 +3,6 @@
 namespace BFACP\Realm;
 
 use BFACP\Realm\Adkats\Battlelog;
-use BFACP\Realm\Adkats\Record;
-use BFACP\Realm\Player\Stats;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -51,7 +49,7 @@ class Player extends Model
      */
     public function recordsBy()
     {
-        return $this->hasMany(Record::class, 'source_id');
+        return $this->hasMany(Adkats\Record::class, 'source_id');
     }
 
     /**
@@ -59,7 +57,7 @@ class Player extends Model
      */
     public function recordsAgainst()
     {
-        return $this->hasMany(Record::class, 'target_id');
+        return $this->hasMany(Adkats\Record::class, 'target_id');
     }
 
     /**
@@ -85,6 +83,14 @@ class Player extends Model
      */
     public function stats()
     {
-        return $this->hasManyThrough(Stats::class, \BFACP\Realm\Player\Server::class, 'PlayerID', 'StatsID');
+        return $this->hasManyThrough(Player\Stat::class, Player\Server::class, 'PlayerID', 'StatsID');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function sessions()
+    {
+        return $this->hasManyThrough(Player\Session::class, Player\Server::class, 'PlayerID', 'StatsID');
     }
 }

@@ -5,10 +5,10 @@ namespace BFACP\Realm\Player;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Player
- * @package BFACP\Realm
+ * Class Session
+ * @package BFACP\Realm\Player
  */
-class Stats extends Model
+class Session extends Model
 {
     /**
      * @var bool
@@ -18,7 +18,7 @@ class Stats extends Model
     /**
      * @var string
      */
-    protected $table = 'tbl_playerstats';
+    protected $table = 'tbl_sessions';
 
     /**
      * @var string
@@ -38,19 +38,19 @@ class Stats extends Model
     /**
      * @var array
      */
-    protected $dates = ['FirstSeenOnServer', 'LastSeenOnServer'];
+    protected $dates = ['StartTime', 'EndTime'];
 
     /**
      * @var array
      */
-    protected $appends = ['first_seen', 'last_seen'];
+    protected $appends = ['session_start', 'session_end'];
 
     /**
      * @return mixed
      */
     public function getFirstSeenAttribute()
     {
-        return $this->FirstSeenOnServer->toIso8601String();
+        return $this->StartTime->toIso8601String();
     }
 
     /**
@@ -58,7 +58,7 @@ class Stats extends Model
      */
     public function getLastSeenAttribute()
     {
-        return $this->LastSeenOnServer->toIso8601String();
+        return $this->EndTime->toIso8601String();
     }
 
     /**
@@ -66,7 +66,6 @@ class Stats extends Model
      */
     public function server()
     {
-        return $this->belongsToMany(Server::class, 'tbl_server_player', 'StatsID',
-            'ServerID');
+        return $this->belongsToMany(\BFACP\Realm\Server::class, 'tbl_server_player', 'StatsID', 'ServerID');
     }
 }
