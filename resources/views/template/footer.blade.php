@@ -5,6 +5,7 @@
 <!-- angular-materialize js -->
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-resource.min.js"></script>
+<script type="text/javascript" src="{{ url('js/angular-plugins/angular-gravatar.min.js') }}"></script>
 <!-- angular-materialize js -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-materialize/0.2.2/angular-materialize.min.js"></script>
 <!--scrollbar-->
