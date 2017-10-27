@@ -2,6 +2,7 @@
 
 namespace BFACP\Http\Resources;
 
+use BFACP\Http\Resources\Adkats\Record as RecordResource;
 use BFACP\Http\Resources\Game as GameResource;
 use BFACP\Http\Resources\Player\Session as PlayerSessionsResource;
 use BFACP\Http\Resources\Player\Stat as PlayerStatsResource;
@@ -45,6 +46,10 @@ class Player extends Resource
             ],
             'stats'     => PlayerStatsResource::collection($this->whenLoaded('stats')),
             'sessions'  => PlayerSessionsResource::collection($this->whenLoaded('sessions')),
+            'records'   => [
+                'me'    => RecordResource::collection($this->whenLoaded('recordsBy')),
+                'other' => RecordResource::collection($this->whenLoaded('recordsAgainst')),
+            ],
         ];
     }
 }
