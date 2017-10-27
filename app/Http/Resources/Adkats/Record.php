@@ -26,8 +26,8 @@ class Record extends Resource
             'id'      => $this->record_id,
             'server'  => (new ServerResource($this->server)),
             'players' => [
-                'target' => (! empty($this->targetPlayer) ? (new PlayerResource($this->targetPlayer)) : $this->target_name),
-                'source' => (! empty($this->sourcePlayer) ? (new PlayerResource($this->sourcePlayer)) : $this->source_name),
+                'target' => (is_object($this->targetPlayer) ? (new PlayerResource($this->targetPlayer)) : $this->target_name),
+                'source' => (is_object($this->sourcePlayer) ? (new PlayerResource($this->sourcePlayer)) : $this->source_name),
             ],
             'command' => [
                 'issued' => (new CommandResource($this->commandType)),
