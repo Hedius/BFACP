@@ -19,7 +19,7 @@ class ApiResponseMacroServiceProvider extends ServiceProvider
     {
         response()->macro('success', function ($message, $data = []) {
             return response()->json([
-                'message' => $message,
+                'message' => $message ?: 'OK',
                 'data'    => $data,
                 'errors'  => null,
             ]);
@@ -27,7 +27,7 @@ class ApiResponseMacroServiceProvider extends ServiceProvider
 
         response()->macro('error', function ($message, $data = [], $errors = [], $status = 422) {
             return response()->json([
-                'message' => $message,
+                'message' => $message ?: 'ERROR',
                 'data'    => $data,
                 'errors'  => $errors,
             ], $status);
