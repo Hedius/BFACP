@@ -2,11 +2,13 @@
 
 namespace BFACP\Http\Controllers\Api;
 
+use BFACP\Exceptions\Adkats\BattlelogException;
 use BFACP\Http\Controllers\Controller;
 use BFACP\Http\Resources\Adkats\Record as RecordResource;
 use BFACP\Http\Resources\Player as PlayerResource;
 use BFACP\Libraries\Battlelog\AntiCheat;
 use BFACP\Realm\Player;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Http\Request;
 
 /**
@@ -46,9 +48,17 @@ class PlayerController extends Controller
      *
      * @return \BFACP\Http\Resources\Player
      */
-    public function show(Player $player)
+    public function show(Request $request, Player $player)
     {
-        $player->load(['stats.server', 'sessions.server']);
+        try {
+            if ($request->has('opts')) {
+                $opts = explode(',', $request->get('opts'));
+                $player->load($opts);
+            }
+        } catch (RelationNotFoundException $e) {
+            // Catch relationship error and quietly ignore it.
+        }
+
         return response()->success(null, (new PlayerResource($player)));
     }
 
@@ -100,9 +110,17 @@ class PlayerController extends Controller
      */
     public function showAntiCheatData(Request $request, Player $player)
     {
-        $battlelog = app(AntiCheat::class);
-        $battlelog->setPlayer($player);
+        try {
+            $battlelog = app(AntiCheat::class);
+            $battlelog->setPlayer($player);
 
-        return $battlelog->parse($battlelog->getPlayerWeapons())->getWeaponsDetected();
+            if (! $player->hasPersona()) {
+                $battlelog->getPlayerInfo();
+            }
+        } catch (BattlelogException $e) {
+            return response()->error($e->getMessage());
+        }
+
+        return response()->success(null, $battlelog->parse($battlelog->getPlayerWeapons())->getWeaponsDetected());
     }
 }
