@@ -165,6 +165,8 @@ class BattlefieldConn
      */
     public function __construct(Server $server, $debug = false)
     {
+        throw_unless($server->ServerID, new RconException('Can\'t load requested server due to database error.'));
+
         $this->server = $server;
 
         if ($this->getCurrentGame() != self::BC2) {
@@ -431,22 +433,11 @@ class BattlefieldConn
     }
 
     /**
-     * @return array
-     * @throws \Throwable
+     * @return BattlelogServer
      */
-    public function processData()
+    public function getBattlelog(): BattlelogServer
     {
-        $this->data['server_parsed'] = [
-            'name'  => $this->getServerInfo()[1],
-            'slots' => $this->battlelog->getOnlinePlayers(),
-            'meta'  => [
-                'extendedInfo' => $this->data['battlelog']['extendedInfo'],
-                'is_ranked'    => (bool) $this->data['battlelog']['ranked'],
-                'server'       => (new ServerResource($this->server)),
-            ],
-        ];
-
-        return $this->data;
+        return $this->battlelog;
     }
 
     /**
