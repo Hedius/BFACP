@@ -22,6 +22,9 @@ Route::namespace('Api')->group(function () {
         ],
     ]);
 
+    Route::get('server/{server}/scoreboard/live', 'ScoreboardController@showLive');
+    Route::get('server/{server}/scoreboard/', 'ScoreboardController@showDbLive');
+
     Route::resource('server', 'ServerController', [
         'only' => [
             'index',
