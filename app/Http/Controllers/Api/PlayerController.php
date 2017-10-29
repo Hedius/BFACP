@@ -31,14 +31,12 @@ class PlayerController extends Controller
         }
 
         if (request()->has('playerName')) {
-            $players = PlayerResource::collection(
-                $player->where('SoldierName', 'LIKE', request()->get('playerName') . '%')->paginate($queryLimit)
-            );
+            $players = $player->where('SoldierName', 'LIKE', request()->get('playerName') . '%');
         } else {
-            $players = PlayerResource::collection($player->orderBy('PlayerID', 'desc')->paginate($queryLimit));
+            $players = $player->orderBy('PlayerID', 'desc');
         }
 
-        return $players;
+        return PlayerResource::collection($players->paginate($queryLimit));
     }
 
     /**
