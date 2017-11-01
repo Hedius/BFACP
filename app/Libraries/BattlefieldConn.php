@@ -198,11 +198,23 @@ class BattlefieldConn
     {
         $loginStatus = $this->clientRequest(sprintf('login.plainText %s', $rconPassword))[0];
 
-        if ($loginStatus == self::DEFAULT_GAME_SERVER_RESPONSE) {
-            $this->isLoggedIn = true;
-            $this->adminVarGetTeamFactions();
+        return $this->setLoginStatus($loginStatus);
+    }
 
-            return $loginStatus;
+    /**
+     * @param $connected
+     * @return string
+     */
+    private function setLoginStatus($connected)
+    {
+        if ($connected == self::DEFAULT_GAME_SERVER_RESPONSE) {
+            $this->isLoggedIn = true;
+
+            if ($this->getCurrentGame() == self::BF4) {
+                $this->adminVarGetTeamFactions();
+            }
+
+            return $connected;
         }
 
         return self::LOGIN_FAILED;
@@ -222,14 +234,7 @@ class BattlefieldConn
 
         $loginStatus = $this->clientRequest(sprintf('login.hashed %s', $saltedHashedPW))[0];
 
-        if ($loginStatus == self::DEFAULT_GAME_SERVER_RESPONSE) {
-            $this->isLoggedIn = true;
-            $this->adminVarGetTeamFactions();
-
-            return $loginStatus;
-        }
-
-        return self::LOGIN_FAILED;
+        return $this->setLoginStatus($loginStatus);
     }
 
     /**
@@ -1357,21 +1362,11 @@ class BattlefieldConn
         $factionOverrides = $this->clientRequest('vars.teamFactionOverride');
         array_shift($factionOverrides);
 
+        // Neutral;
+        $this->rconCache['factions'][0] = $this->rconCache['teams'][0];
+
         foreach ($factionOverrides as $key => $team) {
-            switch ((int) $team) {
-                case 0:
-                    // US Army
-                    $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][1];
-                    break;
-                case 1:
-                    // Russian Army
-                    $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][2];
-                    break;
-                case 2:
-                    // Chinese Army
-                    $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][3];
-                    break;
-            }
+            $this->rconCache['factions'][$key+1] = $this->rconCache['teams'][$team+1];
         }
 
         return $this;
@@ -1399,6 +1394,30 @@ class BattlefieldConn
         }
 
         return $this->rconCache['teams'][$id];
+    }
+
+    /**
+     * @param $id
+     * @return string
+     */
+    protected function getPlayerType($id): string
+    {
+        switch($id) {
+            case 0:
+                $type = 'Player';
+                break;
+            case 1:
+                $type = 'Spectator';
+                break;
+            case 2:
+            case 3:
+                $type = 'Commander';
+                break;
+            default:
+                $type = 'Unknown';
+        }
+
+        return $type;
     }
 
     /**
@@ -1447,6 +1466,8 @@ class BattlefieldConn
 
         $rows = [
             'players' => [],
+            'spectators' => [],
+            'commanders' => [],
             'columns' => [],
         ];
 
@@ -1462,6 +1483,16 @@ class BattlefieldConn
             $row['meta']['squadName'] = $this->getSquadName($row['squadId']);
             $row['meta']['teamName'] = $this->getTeamName($row['teamId']);
 
+            if (array_key_exists('type', $row)) {
+                $type =  $this->getPlayerType($row['type']);
+                $row['meta']['type'] = $type;
+
+                if(in_array(strtolower(str_plural($type)), ['spectators', 'commanders'])) {
+                    $rows[strtolower(str_plural($type))][] = $row;
+                    continue;
+                }
+            }
+
             $rows['players'][] = $row;
         }
 
@@ -1473,7 +1504,7 @@ class BattlefieldConn
     /**
      * @return string
      */
-    private function getCurrentGame(): string
+    public function getCurrentGame(): string
     {
         return $this->server->game->Name;
     }
