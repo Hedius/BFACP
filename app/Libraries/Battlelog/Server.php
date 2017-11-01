@@ -91,6 +91,30 @@ class Server extends BattlelogClient
     }
 
     /**
+     * @return string
+     */
+    public function getServerCountry(): string
+    {
+        return $this->battlelogServerInfo['country'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRanked(): bool
+    {
+        return (bool) $this->battlelogServerInfo['ranked'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getServerTickRate(): int
+    {
+        return $this->battlelogServerInfo['tickRate'];
+    }
+
+    /**
      * @return array
      */
     public function getOnlinePlayers()
