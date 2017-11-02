@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Game
  * @package BFACP\Realm
  * @property integer $GameID
- * @property string $Name
+ * @property string  $Name
  */
 class Game extends Model
 {

@@ -194,6 +194,16 @@ class BattlelogClient
     }
 
     /**
+     * @param null|string $uri
+     *
+     * @return string
+     */
+    public function getBattlelogUrl($uri = null): string
+    {
+        return is_null($uri) ? $this->battlelogUrl : $this->battlelogUrl . $uri;
+    }
+
+    /**
      * @param string $uri
      *
      * @return array
@@ -214,15 +224,5 @@ class BattlelogClient
                 $e->getMessage()));
             throw $e;
         }
-    }
-
-    /**
-     * @param null|string $uri
-     *
-     * @return string
-     */
-    public function getBattlelogUrl($uri = null): string
-    {
-        return is_null($uri) ? $this->battlelogUrl : $this->battlelogUrl . $uri;
     }
 }

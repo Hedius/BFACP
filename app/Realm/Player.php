@@ -10,15 +10,15 @@ use Illuminate\Database\Eloquent\Model;
  * @package BFACP\Realm
  * @property integer $PlayerID
  * @property integer $GameID
- * @property string $ClanTag
- * @property string $SoldierName
+ * @property string  $ClanTag
+ * @property string  $SoldierName
  * @property integer $GlobalRank
- * @property string $PBGUID
- * @property string $EAGUID
- * @property string $IP_Address
- * @property string $DiscordID
- * @property string $IPv6_Address
- * @property string $CountryCode
+ * @property string  $PBGUID
+ * @property string  $EAGUID
+ * @property string  $IP_Address
+ * @property string  $DiscordID
+ * @property string  $IPv6_Address
+ * @property string  $CountryCode
  */
 class Player extends Model
 {

@@ -45,8 +45,7 @@ if (! function_exists('percent')) {
     }
 }
 
-if (! function_exists('booleanToString'))
-{
+if (! function_exists('booleanToString')) {
     /**
      * @param $boolean
      *
@@ -54,12 +53,11 @@ if (! function_exists('booleanToString'))
      */
     function booleanToString($boolean): string
     {
-        return $boolean ? 'true' :  'false';
+        return $boolean ? 'true' : 'false';
     }
 }
 
-if (! function_exists('arrayToBoolean'))
-{
+if (! function_exists('arrayToBoolean')) {
     /**
      * @param     $array
      * @param int $key
@@ -76,8 +74,7 @@ if (! function_exists('arrayToBoolean'))
     }
 }
 
-if (! function_exists('arrayToString'))
-{
+if (! function_exists('arrayToString')) {
     /**
      * @param     $array
      * @param int $key
@@ -90,8 +87,7 @@ if (! function_exists('arrayToString'))
     }
 }
 
-if (! function_exists('arrayToInteger'))
-{
+if (! function_exists('arrayToInteger')) {
     /**
      * @param     $array
      * @param int $key

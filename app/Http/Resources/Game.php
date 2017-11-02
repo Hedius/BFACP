@@ -20,10 +20,10 @@ class Game extends Resource
     public function toArray($request)
     {
         return [
-            'id'      => $this->GameID,
-            'label'   => $this->Name,
-            'chip_class'    => $this->chip_class,
-            'servers' => Server::collection($this->whenLoaded('servers')),
+            'id'         => $this->GameID,
+            'label'      => $this->Name,
+            'chip_class' => $this->chip_class,
+            'servers'    => Server::collection($this->whenLoaded('servers')),
         ];
     }
 }

@@ -97,30 +97,6 @@ class AntiCheat extends Player
     }
 
     /**
-     * @return \BFACP\Libraries\Battlelog\AntiCheat
-     */
-    private function getWeaponDamages()
-    {
-        $this->setWeapons($this->cache->remember('acs.weapons', 60 * 24, function () {
-            try {
-                $response = $this->client->get($this->_links['weapon_damages']['primary']);
-            } catch (RequestException $e) {
-                Log::error('Failed to get weapon damages from github. Trying backup location..');
-                try {
-                    $response = $this->client->get($this->_links['weapon_damages']['backup']);
-                } catch (RequestException $e) {
-                    Log::critical('Failed to get weapon damages from backup location. Reason: ' . $e->getMessage());
-                    throw $e;
-                }
-            }
-
-            return json_decode($response->getBody(), true);
-        }));
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function getWeaponsDetected(): array
@@ -173,6 +149,30 @@ class AntiCheat extends Player
                 }
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return \BFACP\Libraries\Battlelog\AntiCheat
+     */
+    private function getWeaponDamages()
+    {
+        $this->setWeapons($this->cache->remember('acs.weapons', 60 * 24, function () {
+            try {
+                $response = $this->client->get($this->_links['weapon_damages']['primary']);
+            } catch (RequestException $e) {
+                Log::error('Failed to get weapon damages from github. Trying backup location..');
+                try {
+                    $response = $this->client->get($this->_links['weapon_damages']['backup']);
+                } catch (RequestException $e) {
+                    Log::critical('Failed to get weapon damages from backup location. Reason: ' . $e->getMessage());
+                    throw $e;
+                }
+            }
+
+            return json_decode($response->getBody(), true);
+        }));
 
         return $this;
     }

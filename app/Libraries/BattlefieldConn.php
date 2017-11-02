@@ -3,8 +3,8 @@
 namespace BFACP\Libraries;
 
 
+use BFACP\Exceptions\Adkats\BattlelogException;
 use BFACP\Exceptions\Adkats\RconException;
-use BFACP\Http\Resources\Server as ServerResource;
 use BFACP\Libraries\Battlelog\Server as BattlelogServer;
 use BFACP\Realm\Server;
 use Illuminate\Support\Facades\Log;
@@ -202,25 +202,6 @@ class BattlefieldConn
     }
 
     /**
-     * @param $connected
-     * @return string
-     */
-    private function setLoginStatus($connected)
-    {
-        if ($connected == self::DEFAULT_GAME_SERVER_RESPONSE) {
-            $this->isLoggedIn = true;
-
-            if ($this->getCurrentGame() == self::BF4) {
-                $this->adminVarGetTeamFactions();
-            }
-
-            return $connected;
-        }
-
-        return self::LOGIN_FAILED;
-    }
-
-    /**
      * @param $rconPassword
      *
      * @return string
@@ -280,8 +261,12 @@ class BattlefieldConn
             $this->data['server'] = $req;
         }
 
-        if (! is_null($this->battlelog) && empty($this->data['battlelog'])) {
-            $this->data['battlelog'] = $this->battlelog->getServerInfo();
+        try {
+            if (! is_null($this->battlelog) && empty($this->data['battlelog'])) {
+                $this->data['battlelog'] = $this->battlelog->getServerInfo();
+            }
+        } catch (BattlelogException $e) {
+            // Catch battlelog exception
         }
 
         return $this->data['server'];
@@ -1366,10 +1351,18 @@ class BattlefieldConn
         $this->rconCache['factions'][0] = $this->rconCache['teams'][0];
 
         foreach ($factionOverrides as $key => $team) {
-            $this->rconCache['factions'][$key+1] = $this->rconCache['teams'][$team+1];
+            $this->rconCache['factions'][$key + 1] = $this->rconCache['teams'][$team + 1];
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentGame(): string
+    {
+        return $this->server->game->Name;
     }
 
     /**
@@ -1398,11 +1391,12 @@ class BattlefieldConn
 
     /**
      * @param $id
+     *
      * @return string
      */
     protected function getPlayerType($id): string
     {
-        switch($id) {
+        switch ($id) {
             case 0:
                 $type = 'Player';
                 break;
@@ -1418,6 +1412,26 @@ class BattlefieldConn
         }
 
         return $type;
+    }
+
+    /**
+     * @param $connected
+     *
+     * @return string
+     */
+    private function setLoginStatus($connected)
+    {
+        if ($connected == self::DEFAULT_GAME_SERVER_RESPONSE) {
+            $this->isLoggedIn = true;
+
+            if ($this->getCurrentGame() == self::BF4) {
+                $this->adminVarGetTeamFactions();
+            }
+
+            return $connected;
+        }
+
+        return self::LOGIN_FAILED;
     }
 
     /**
@@ -1465,10 +1479,10 @@ class BattlefieldConn
         }
 
         $rows = [
-            'players' => [],
+            'players'    => [],
             'spectators' => [],
             'commanders' => [],
-            'columns' => [],
+            'columns'    => [],
         ];
 
         for ($n = 0; $n < $nRows; $n++) {
@@ -1484,10 +1498,10 @@ class BattlefieldConn
             $row['meta']['teamName'] = $this->getTeamName($row['teamId']);
 
             if (array_key_exists('type', $row)) {
-                $type =  $this->getPlayerType($row['type']);
+                $type = $this->getPlayerType($row['type']);
                 $row['meta']['type'] = $type;
 
-                if(in_array(strtolower(str_plural($type)), ['spectators', 'commanders'])) {
+                if (in_array(strtolower(str_plural($type)), ['spectators', 'commanders'])) {
                     $rows[strtolower(str_plural($type))][] = $row;
                     continue;
                 }
@@ -1499,14 +1513,6 @@ class BattlefieldConn
         $rows['columns'] = $columns;
 
         return $rows;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrentGame(): string
-    {
-        return $this->server->game->Name;
     }
 
     /**
