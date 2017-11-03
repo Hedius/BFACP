@@ -64,7 +64,7 @@ class Server extends BattlelogClient
      */
     public function getBattlelogServerInfo()
     {
-        return $this->cache->get('battlelog.server.' . $this->server->id);
+        return $this->cache->get('battlelog.server.' . $this->server->ServerID);
     }
 
     /**
@@ -74,7 +74,7 @@ class Server extends BattlelogClient
      */
     public function setBattlelogServerInfo($battlelogServerInfo)
     {
-        $this->battlelogServerInfo = $this->cache->remember('battlelog.server.' . $this->server->id, 5,
+        $this->battlelogServerInfo = $this->cache->remember('battlelog.server.' . $this->server->ServerID, 5,
             function () use ($battlelogServerInfo) {
                 return $battlelogServerInfo;
             });
