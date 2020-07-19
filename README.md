@@ -1,5 +1,5 @@
 # Addon: BF4DB and BA - panel integration
-Implement the changes of commit: x
+Implement the changes of commit: https://gitlab.com/e4gl/bfacp/-/commit/d9c08e22a2c2dcc4097ffbe73a532d54cddef524
 
 
 # PHP 7.3 Support
