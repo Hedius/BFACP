@@ -1,15 +1,18 @@
-# License:
-Important: All my changes are open source and should remain open. Therefore, I have licensed them under the GPLv3!
-
 # Addon: BF4DB and BA - panel integration
-Implement the changes of commit: https://gitlab.com/e4gl/bfacp/-/commit/d9c08e22a2c2dcc4097ffbe73a532d54cddef524
+Guide: https://gitlab.com/e4gl/bfacp/-/wikis/BF4DB-and-Battlefield-Agency-Integration
 
 
-# PHP 7.3 Support
+# Addon: PHP 7.3 Support
 This fork of AdKats/BFACP has been modified to be compatible with PHP 7.3.
 1. Install AdKats from AdKats/BFACP
 2. Follow the manual [update guide](https://github.com/Hedius/BFACP/wiki/PHP-7.3:-Upgrading-an-existing-instance).
 
+
+# License
+I ask you to make changes to my code not closed source. I try to apply GPLv3 to my code where it is possible. Therefore, I please you to make changes to my code public too! (submit pull requests or fork my repo). **Open source coding is important for me!**
+
+
+# Original README:
 
 [![Circle CI](https://circleci.com/gh/Prophet731/BFAdminCP.svg?style=svg)](https://circleci.com/gh/Prophet731/BFAdminCP) [![Download Battlefield Admin Control Panel](https://img.shields.io/sourceforge/dt/bfacp.svg)](https://sourceforge.net/projects/bfacp/files/latest/download)[![Latest Stable Version](https://poser.pugx.org/adkgamers/bfadmincp/v/stable)](https://packagist.org/packages/adkgamers/bfadmincp) [![Total Downloads](https://poser.pugx.org/adkgamers/bfadmincp/downloads)](https://packagist.org/packages/adkgamers/bfadmincp) [![Latest Unstable Version](https://poser.pugx.org/adkgamers/bfadmincp/v/unstable)](https://packagist.org/packages/adkgamers/bfadmincp) [![License](https://poser.pugx.org/adkgamers/bfadmincp/license)](https://packagist.org/packages/adkgamers/bfadmincp)
 
