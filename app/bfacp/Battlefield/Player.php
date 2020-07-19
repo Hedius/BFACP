@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\App as App;
 use Illuminate\Support\Facades\Cache as Cache;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Config;
 
 class Player extends Elegant
 {
@@ -249,6 +250,173 @@ class Player extends Elegant
     }
 
     /**
+    * Query Cheat Report for the BF4DB status
+    * By H3dius: GPLv3
+    */
+    private function checkBF4DBoverBF4CheatReport()
+    {
+        $request = App::make('guzzle')->get(sprintf('http://bf4cheatreport.com/brindex.php?%s',
+            http_build_query(
+                [
+                    'outputtype' => 'json',
+                    'cnt'   => 10,
+                    'uid' =>  $this->SoldierName,
+                ])
+            ),
+            [
+                'connect_timeout' => 5,
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36',
+                    'Accept'     => 'application/json',
+                ],
+            ]
+        );
+
+        $response = $request->json();
+
+        if (isset($response['br_array']) && count($response['br_array']) >= 1) {
+            $report = $response['br_array'][0];
+            if(!isset($report['db_banned']) || $report['db_banned'] != 1){
+                throw new Exception();
+            }
+        
+            $bf4db_profile = [
+                'bf4db_api' => false,
+                'is_banned' => 1,
+                'cheat_score' => 100,
+                'url'        => sprintf('https://bf4db.com/player/search?query=%s', $this->SoldierName),
+                'reason' => "Banned: " . $report['db_reason'],
+            ];
+                    
+            return $bf4db_profile;
+        }
+        throw new Exception();
+    }
+    
+    /**
+    * Query the BF4DB API. Use BF4CheatReport if the request fails (no persona id)
+    * By H3dius: GPLv3
+    */
+    private function checkBF4DB()
+    {
+        $token = Config::get('bf4db.key');
+        if(is_null($token) || strlen($token) === 0 || is_null($this->battlelog)){
+            return $this->checkBF4DBoverBF4CheatReport();
+        }
+        
+        $request = App::make('guzzle')->get(sprintf('https://bf4db.com/api/player/%s?api_token=%s', $this->battlelog->persona_id, $token),
+                                            [
+                                                'connect_timeout' => 5,
+                                                'headers' => [
+                                                    'Accept' => 'application/json',
+                                                    'Content-Type' => 'application/json'
+                                                ],
+                                            ]
+        );
+
+        $response = $request->json()['data'];
+        
+        // status code to text
+        switch($response['is_banned']){
+            case -1:
+                $reason = 'Not yet reported'; break;
+            case 0:
+                $reason = 'Under Review'; break;
+            case 1:
+                $reason = sprintf('Banned: %s', $response['ban_reason']); break;
+            case 2:
+                $reason = sprintf('Clean: %s', $response['ban_reason']); break;
+            case 3:
+                $reason = 'Staff Member'; break;
+            case 4:
+                $reason = sprintf('Glitch: %s', $response['ban_reason']); break;
+            case 5:
+                $reason = sprintf('Exploit: %s', $response['ban_reason']); break;
+        }
+                
+        // cheat score
+        if(in_array($response['is_banned'], [-1, 0, 2, 4, 5])){
+            $reason = $reason . sprintf(' - Cheat Score: %s', $response['cheat_score']);
+        }
+        
+        // profile
+        $bf4db_profile = [
+            'bf4db_api' => true,
+            'is_banned' => $response['is_banned'],
+            'cheat_score' => $response['cheat_score'],
+            'url'        => sprintf('https://bf4db.com/player/%s', $this->battlelog->persona_id),
+            'reason' => $reason,
+         ];
+        return $bf4db_profile;
+    }
+
+    /**
+     * Check the BA status
+     * By H3dius: GPLv3
+     */
+    private function checkBA()
+    {
+        // default
+        $ba_profile = [
+            'id' => null,
+            'is_banned' => false,
+            'reason' => 'Not Banned',
+            'url' => sprintf('https://battlefield.agency/player/by-guid/%s', $this->EAGUID),
+         ];
+
+
+        // token from config
+        $token = Config::get('BA.key');
+
+        // token valid?
+        if(is_null($token) || strlen($token) === 0){
+            return $ba_profile;
+        }
+        
+        // send request
+        try{
+            $request = App::make('guzzle')->get(sprintf('https://api.battlefield.agency/api/player/by-guid/%s', $this->EAGUID), 
+                [
+                    'connect_timeout' => 5,
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Authorization' => sprintf('APIKEY %s', $token),
+                    ],
+                ]
+            );
+        }
+        catch(Exception $e){
+            return $ba_profile;
+        }
+
+        // player found?
+        if($request->getStatusCode() >= 300){
+            return $ba_profile;
+        }
+
+        $data = $request->json();
+
+        // get BA ID
+        $ba_profile['id'] = $data['id'];
+        $ba_profile['url'] = sprintf('https://battlefield.agency/player/%s', $data['id']);
+
+        $ban = $data['global_ban'];
+
+        // player banned != null
+        if(is_null($ban)){
+            return $ba_profile;
+        }
+
+        // player = banned
+        // set reason
+        $ba_profile['is_banned'] = true;
+        $ba_profile['reason'] = $ban['reason'];
+
+        return $ba_profile;
+    }
+
+
+    /**
      * Generates links to external/internal systems.
      *
      * @return array
@@ -268,60 +436,63 @@ class Player extends Elegant
 
         // Battlelog URL
         if (is_null($this->battlelog)) {
-            $links['battlelog'] = sprintf('http://battlelog.battlefield.com/%s/user/%s', strtolower($game),
+            $links['battlelog'] = sprintf('https://battlelog.battlefield.com/%s/user/%s', strtolower($game),
                 $this->SoldierName);
+        if ($game == 'BF4') {
+            $links['bf4cheatreport'] = sprintf('http://bf4cheatreport.com/?pid=&uid=%s&cnt=30&start=&startdate=',  $this->SoldierName);
+        }
         } else {
             if ($game == 'BFH') {
-                $links['battlelog'] = sprintf('http://battlelog.battlefield.com/%s/agent/%s/stats/%u/pc/',
+                $links['battlelog'] = sprintf('https://battlelog.battlefield.com/%s/agent/%s/stats/%u/pc/',
                     strtolower($game), $this->SoldierName, $this->battlelog->persona_id);
             } else {
-                $links['battlelog'] = sprintf('http://battlelog.battlefield.com/%s/soldier/%s/stats/%u/pc/',
+                $links['battlelog'] = sprintf('https://battlelog.battlefield.com/%s/soldier/%s/stats/%u/pc/',
                     strtolower($game), $this->SoldierName, $this->battlelog->persona_id);
             }
+            if ($game == 'BF4') {
+                $links['bf4cheatreport'] = sprintf('http://bf4cheatreport.com/?pid=%s&uid=&cnt=30&start=&startdate=', $this->battlelog->persona_id);
+            }
         }
-
+        
+        // custom BF4DB handling
         if ($game == 'BF4') {
+            if (is_null($this->battlelog)){
+                $url = sprintf('https://bf4db.com/player/search?query=%s', $this->SoldierName);
+            } else {
+                $url = sprintf('https://bf4db.com/player/%s', $this->battlelog->persona_id);
+            }
             try {
                 if (Route::currentRouteName() != 'player.show') {
                     throw new Exception();
                 }
-
-                $request = App::make('guzzle')->get(sprintf('http://api.bf4db.com/api-player.php?%s', http_build_query([
-                    'format' => 'json',
-                    'guid'   => $this->EAGUID,
-                ])), [
-                    'connect_timeout' => 5,
-                ]);
-
-                $response = $request->json();
-
-                if ($response['type'] != 'error') {
-                    $bf4db_profile = [
-                        'url'        => $response['data']['bf4db_url'],
-                        'cheatscore' => $response['data']['cheatscore'],
-                    ];
-                } else {
-                    throw new Exception();
-                }
+                
+                $bf4db_profile = $this->checkBF4DB();
+        
             } catch (Exception $e) {
                 $bf4db_profile = [
-                    'url'        => sprintf('http://bf4db.com/players?name=%s', $this->SoldierName),
-                    'cheatscore' => null,
+                    'bf4db_api' => false,
+                    'is_banned' => -1,
+                    'cheat_score' => 0,
+                    'url'        => $url,
+                    'reason' => 'OK',
                 ];
+            
             }
         }
 
+        // request the BA profile
+        $ba_profile = $this->checkBA();
+
         $links[] = [
-            'bf3stats' => $game == 'BF3' ? sprintf('http://bf3stats.com/stats_pc/%s', $this->SoldierName) : null,
-            'bf4stats' => $game == 'BF4' ? sprintf('http://bf4stats.com/pc/%s', $this->SoldierName) : null,
-            'bfhstats' => $game == 'BFH' ? sprintf('http://bfhstats.com/pc/%s', $this->SoldierName) : null,
-            'istats'   => sprintf('http://i-stats.net/index.php?action=pcheck&player=%s&game=%s&sub=Check+Player',
-                $this->SoldierName, $game),
-            'metabans' => sprintf('http://metabans.com/search/?phrase=%s', $this->SoldierName),
-            'bf4db'    => $game == 'BF4' ? $bf4db_profile : null,
+            // gone
+            // 'bf3stats' => $game == 'BF3' ? sprintf('http://bf3stats.com/stats_pc/%s', $this->SoldierName) : null,
+            // 'bf4stats' => $game == 'BF4' ? sprintf('http://bf4stats.com/pc/%s', $this->SoldierName) : null,
+            // 'bfhstats' => $game == 'BFH' ? sprintf('http://bfhstats.com/pc/%s', $this->SoldierName) : null,
             'chatlogs' => route('chatlog.search', ['pid' => $this->PlayerID]),
-            'pbbans'   => !empty($this->PBGUID) ? sprintf('http://www.pbbans.com/mbi-guid-search-%s.html',
-                $this->PBGUID) : null,
+            'bf4db'    => $game == 'BF4' ? $bf4db_profile : null,
+            'ba' => $ba_profile,
+            'pbbans'   => !empty($this->PBGUID) ? sprintf('http://www.pbbans.com/mbi-guid-search-%s.html', $this->PBGUID) : null,
+            'fairplay' => sprintf('https://www.247fairplay.com/CheatDetector/%s', $this->SoldierName),
         ];
 
         $links = array_merge($links, $links[0]);

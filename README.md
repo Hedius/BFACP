@@ -1,3 +1,7 @@
+# Addon: BF4DB and BA - panel integration
+Implement the changes of commit: x
+
+
 # PHP 7.3 Support
 This fork of AdKats/BFACP has been modified to be compatible with PHP 7.3.
 1. Install AdKats from AdKats/BFACP

@@ -38,6 +38,10 @@ return [
                 'bfhstats'     => 'BFH Stats',
                 'metabans'     => 'Metabans',
                 'pbbans'       => 'PBBans',
+                'bf4cheatreport'     => 'bf4cheatreport',
+                'ba'     => 'Battlefield Agency',
+                'fairplay'     => '24/7 Fairplay',
+
                 /**
                  * Internal LInks
                  */

@@ -68,4 +68,9 @@ return [
     'PUSHER_APP_ID' => '',
     'PUSHER_APP_KEY' => '',
     'PUSHER_APP_SECRET' => '',
+
+    'BF4DB_KEY' => '',
+    'BA_KEY' => '',
+
 ];
+
