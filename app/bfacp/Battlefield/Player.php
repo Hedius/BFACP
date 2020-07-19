@@ -266,7 +266,7 @@ class Player extends Elegant
             [
                 'connect_timeout' => 5,
                 'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36',
+                    'User-Agent' => 'BFAdminCP',
                     'Accept'     => 'application/json',
                 ],
             ]
@@ -308,6 +308,7 @@ class Player extends Elegant
                                             [
                                                 'connect_timeout' => 5,
                                                 'headers' => [
+                                                    'User-Agent' => 'BFAdminCP',
                                                     'Accept' => 'application/json',
                                                     'Content-Type' => 'application/json'
                                                 ],
@@ -379,6 +380,7 @@ class Player extends Elegant
                 [
                     'connect_timeout' => 5,
                     'headers' => [
+                        'User-Agent' => 'BFAdminCP',
                         'Accept' => 'application/json',
                         'Authorization' => sprintf('APIKEY %s', $token),
                     ],
