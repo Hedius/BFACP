@@ -1,5 +1,5 @@
-# Addon: BF4DB and BA - panel integration
-Guide: https://gitlab.com/e4gl/bfacp/-/wikis/BF4DB-and-Battlefield-Agency-Integration
+# Addon: BF4DB - panel integration
+Guide: https://gitlab.com/e4gl/bfacp/-/wikis/BF4DB-Integration
 
 
 # Addon: PHP 7.3 Support

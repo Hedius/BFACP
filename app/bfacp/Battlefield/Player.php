@@ -352,73 +352,6 @@ class Player extends Elegant
     }
 
     /**
-     * Check the BA status
-     * By H3dius: GPLv3
-     */
-    private function checkBA()
-    {
-        // default
-        $ba_profile = [
-            'id' => null,
-            'is_banned' => false,
-            'reason' => 'Not Banned',
-            'url' => sprintf('https://battlefield.agency/player/by-guid/%s', $this->EAGUID),
-         ];
-
-
-        // token from config
-        $token = Config::get('BA.key');
-
-        // token valid?
-        if(is_null($token) || strlen($token) === 0){
-            return $ba_profile;
-        }
-        
-        // send request
-        try{
-            $request = App::make('guzzle')->get(sprintf('https://api.battlefield.agency/api/player/by-guid/%s', $this->EAGUID), 
-                [
-                    'connect_timeout' => 5,
-                    'headers' => [
-                        'User-Agent' => 'BFAdminCP',
-                        'Accept' => 'application/json',
-                        'Authorization' => sprintf('APIKEY %s', $token),
-                    ],
-                ]
-            );
-        }
-        catch(Exception $e){
-            return $ba_profile;
-        }
-
-        // player found?
-        if($request->getStatusCode() >= 300){
-            return $ba_profile;
-        }
-
-        $data = $request->json();
-
-        // get BA ID
-        $ba_profile['id'] = $data['id'];
-        $ba_profile['url'] = sprintf('https://battlefield.agency/player/%s', $data['id']);
-
-        $ban = $data['global_ban'];
-
-        // player banned != null
-        if(is_null($ban)){
-            return $ba_profile;
-        }
-
-        // player = banned
-        // set reason
-        $ba_profile['is_banned'] = true;
-        $ba_profile['reason'] = $ban['reason'];
-
-        return $ba_profile;
-    }
-
-
-    /**
      * Generates links to external/internal systems.
      *
      * @return array
@@ -482,9 +415,6 @@ class Player extends Elegant
             }
         }
 
-        // request the BA profile
-        $ba_profile = $this->checkBA();
-
         $links[] = [
             // gone
             // 'bf3stats' => $game == 'BF3' ? sprintf('http://bf3stats.com/stats_pc/%s', $this->SoldierName) : null,
@@ -492,7 +422,6 @@ class Player extends Elegant
             // 'bfhstats' => $game == 'BFH' ? sprintf('http://bfhstats.com/pc/%s', $this->SoldierName) : null,
             'chatlogs' => route('chatlog.search', ['pid' => $this->PlayerID]),
             'bf4db'    => $game == 'BF4' ? $bf4db_profile : null,
-            'ba' => $ba_profile,
             'pbbans'   => !empty($this->PBGUID) ? sprintf('http://www.pbbans.com/mbi-guid-search-%s.html', $this->PBGUID) : null,
             'fairplay' => sprintf('https://www.247fairplay.com/CheatDetector/%s', $this->SoldierName),
         ];

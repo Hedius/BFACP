@@ -403,12 +403,6 @@
                                   @else
                                       {{ HTML::link($link->url, Lang::get(sprintf('player.profile.links.items.%s', $key)) . ' - OK', ['class' => 'btn bg-blue', 'target' => '_blank']) }}
                                   @endif
-                                @elseif($key == 'ba')
-                                  @if($link->is_banned === true)
-                                    {{ HTML::link($link->url, Lang::get(sprintf('player.profile.links.items.%s', $key)) . sprintf(' - Banned: %s', $link->reason), ['class' => 'btn bg-red', 'target' => '_blank']) }}
-                                  @else
-                                    {{ HTML::link($link->url, Lang::get(sprintf('player.profile.links.items.%s', $key)) . sprintf(' - %s', $link->reason), ['class' => 'btn bg-blue', 'target' => '_blank']) }}
-                                  @endif
                                 @else
                                     @if($key == 'chatlogs' && ((!$bfacp->isLoggedIn && !Config::get('bfacp.site.chatlogs.guest')) || ($bfacp->isLoggedIn && !$bfacp->user->ability(null, 'chatlogs'))))
                                         {{-- Do not show the chatlogs button --}}

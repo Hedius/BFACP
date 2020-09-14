@@ -70,7 +70,6 @@ return [
     'PUSHER_APP_SECRET' => '',
 
     'BF4DB_KEY' => '',
-    'BA_KEY' => '',
 
 ];
 
